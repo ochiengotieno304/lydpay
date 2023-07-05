@@ -1,0 +1,56 @@
+version: '3.5'
+services:
+  web:
+    container_name: wapay-api
+    build: .
+    command: bash -c "./bin/wait && bundle exec hanami server --host 0.0.0.0"
+    env_file: .env
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/web:cached
+      - bundle-cache:/usr/local/bundle:cached
+    ports:
+      - 3000:3000
+    depends_on:
+      - database
+    environment:
+      - WAIT_HOSTS=database:5432
+    networks:
+      - default
+      - web
+
+
+  database:
+    container_name: database
+    image: postgres:10.3-alpine
+    ports:
+      - 5433:5432
+    env_file: .env
+    volumes:
+      - .:/web:cached
+      - db-data:/var/lib/postgresql/data:cached
+
+  node:
+    container_name: node
+    image: node:12
+    command:
+      - /bin/sh
+      - '-c'
+      - |
+        yarn install
+        yarn run dev
+    working_dir: /web/apps
+    ports:
+      - 3500:3500
+    env_file: .env
+    volumes:
+      - .:/web:cached
+
+volumes:
+  db-data: null
+  bundle-cache: null
+
+networks:
+  web:
