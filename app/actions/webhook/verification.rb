@@ -4,7 +4,6 @@ module Wapay
   module Actions
     module Webhook
       class Verification < Wapay::Action
-
         params do
           required(:"hub.verify_token").filled(:string)
           required(:"hub.mode").filled(:string)
@@ -19,7 +18,7 @@ module Wapay
           verify_token = request.params[:"hub.verify_token"]
           challenge = request.params[:"hub.challenge"]
 
-          halt 403 unless mode === "subscribe" and verify_token.eql? token
+          halt 403 unless (mode === 'subscribe') && verify_token.eql?(token)
 
           response.status = 200
           response.body = challenge.to_i
