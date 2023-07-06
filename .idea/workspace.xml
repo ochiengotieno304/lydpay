@@ -4,27 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4cf1ba31-1c7d-45e2-84f3-89afa6623a58" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gemfile" beforeDir="false" afterPath="$PROJECT_DIR$/Gemfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gemfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Gemfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Guardfile" beforeDir="false" afterPath="$PROJECT_DIR$/Guardfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Rakefile" beforeDir="false" afterPath="$PROJECT_DIR$/Rakefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/action.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/action.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/actions/webhook/verification.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/verification.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.ru" beforeDir="false" afterPath="$PROJECT_DIR$/config.ru" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/app.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/puma.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/puma.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/routes.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/routes.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/types.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/types.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spec/actions/webhook/confirmation_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/actions/webhook/confirmation_spec.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spec/actions/webhook/incoming_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/actions/webhook/incoming_spec.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spec/requests/root_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/requests/root_spec.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spec/spec_helper.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/spec_helper.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spec/support/requests.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/support/requests.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spec/support/rspec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/support/rspec.rb" afterDir="false" />
-    </list>
+    <list default="true" id="4cf1ba31-1c7d-45e2-84f3-89afa6623a58" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -147,7 +127,7 @@
       <workItem from="1688459946971" duration="2681000" />
       <workItem from="1688557962725" duration="7015000" />
       <workItem from="1688628657889" duration="8847000" />
-      <workItem from="1688638774273" duration="618000" />
+      <workItem from="1688638774273" duration="1085000" />
     </task>
     <servers />
   </component>
