@@ -15,45 +15,46 @@ module Wapay
 
           if body.object
             if body.entry and
-               body.entry[0].changes and
-               body.entry[0].changes[0] and
-               body.entry[0].changes[0].value.messages and
-               body.entry[0].changes[0].value.messages[0]
+              body.entry[0].changes and
+              body.entry[0].changes[0] and
+              body.entry[0].changes[0].value.messages and
+              body.entry[0].changes[0].value.messages[0]
 
               phone_number_id = body.entry[0].changes[0].value.metadata.phone_number_id
               from = body.entry[0].changes[0].value.messages[0].from
               body.entry[0].changes[0].value.messages[0].text.body
 
-              conn = Faraday.new(
-                url: 'https://graph.facebook.com/v17.0',
-                headers: { 'Content-Type' => 'application/json', 'Authorization' => "Bearer #{access_token}" }
-              )
+              conn = Faraday.new('https://graph.facebook.com/v17.0') do |f|
+                f.request :json
+                f.response :json
+                f.adapter Faraday.default_adapter
+              end
 
-              response.body = conn.post("/#{phone_number_id}/messages") do |req|
+              conn.post("/#{phone_number_id}/messages?access_token=#{access_token}") do |req|
                 req.body = {
-                  "messaging_product": 'whatsapp',
-                  "recipient_type": 'individual',
+                  "messaging_product": "whatsapp",
+                  "recipient_type": "individual",
                   "to": from,
-                  "type": 'interactive',
+                  "type": "interactive",
                   "interactive": {
-                    "type": 'button',
+                    "type": "button",
                     "body": {
-                      "text": 'BUTTON_TEXT'
+                      "text": "Do you wish to register a new WA-Pay account"
                     },
                     "action": {
                       "buttons": [
                         {
-                          "type": 'reply',
+                          "type": "reply",
                           "reply": {
-                            "id": 'UNIQUE_BUTTON_ID_1',
-                            "title": 'BUTTON_TITLE_1'
+                            "id": "1",
+                            "title": "Yes"
                           }
                         },
                         {
-                          "type": 'reply',
+                          "type": "reply",
                           "reply": {
-                            "id": 'UNIQUE_BUTTON_ID_2',
-                            "title": 'BUTTON_TITLE_2'
+                            "id": "0",
+                            "title": "No"
                           }
                         }
                       ]
