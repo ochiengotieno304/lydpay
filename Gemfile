@@ -28,12 +28,12 @@ group :development do
 end
 
 group :test do
+  gem 'database_cleaner-sequel'
   gem 'rack-test'
-  gem "database_cleaner-sequel"
 end
 
 gem 'faraday', '~> 2.7'
 gem 'guard-puma', '~> 0.8'
-gem "rom", "~> 5.3"
-gem "rom-sql", "~> 3.6"
-gem "pg"
+gem 'pg'
+gem 'rom', '~> 5.3'
+gem 'rom-sql', '~> 3.6'
