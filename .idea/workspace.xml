@@ -13,6 +13,13 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Ruby Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -139,6 +146,7 @@
       <workItem from="1688828514365" duration="5968000" />
       <workItem from="1688852088497" duration="1599000" />
       <workItem from="1688854344711" duration="1316000" />
+      <workItem from="1688888726705" duration="4696000" />
     </task>
     <servers />
   </component>
