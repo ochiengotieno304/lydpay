@@ -5,5 +5,6 @@ module Wapay
     root { 'Hello from Hanami' }
     get '/webhook', to: 'webhook.verification'
     post '/webhook', to: 'webhook.incoming'
+    post '/users', to: 'users.create'
   end
 end

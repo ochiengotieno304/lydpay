@@ -16,7 +16,7 @@ module Wapay
       f.adapter Faraday.default_adapter
     end
 
-    def self.send_text_message(to_phone, to_name, message)
+    def self.send_text_message(to_phone, message)
       @conn.post(nil) do |req|
         req.body = {
           "messaging_product": 'whatsapp',
@@ -25,13 +25,13 @@ module Wapay
           "type": 'text',
           "text": {
             "preview_url": false,
-            "body": "Dear #{to_name} #{message}"
+            "body": message
           }
         }
       end
     end
 
-    def self.send_button_message(to_phone, to_name)
+    def self.send_button_message(to_phone, message, buttons)
       @conn.post(nil) do |req|
         req.body = {
           "messaging_product": 'whatsapp',
@@ -41,24 +41,11 @@ module Wapay
           "interactive": {
             "type": 'button',
             "body": {
-              "text": "Hello #{to_name}, Do you wish to register a new WA-Pay account"
+              "text": message
             },
             "action": {
               "buttons": [
-                {
-                  "type": 'reply',
-                  "reply": {
-                    "id": 'confirm-registration',
-                    "title": 'Yes'
-                  }
-                },
-                {
-                  "type": 'reply',
-                  "reply": {
-                    "id": 'cancel-registration',
-                    "title": 'No'
-                  }
-                }
+                buttons[0], buttons[1], buttons[2]
               ]
             }
           }
