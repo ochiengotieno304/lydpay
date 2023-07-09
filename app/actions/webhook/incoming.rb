@@ -71,7 +71,15 @@ module Wapay
               end
 
               if message_type == 'interactive'
-                button_id = body.entry[0].changes[0].value.messages[0].interactive.button_reply.id
+
+                # Assuming `body` is the input data structure
+                button_id = ''
+
+                if body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id
+                  button_id = body.entry[0].changes[0].value.messages[0].interactive.button_reply.id
+                elsif body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                  button_id = body.entry[0].changes[0].value.messages[0].interactive.list_reply.id
+                end
 
                 # Registration confirmation
                 if button_id == 'confirm-registration'
@@ -97,44 +105,59 @@ module Wapay
                         "type": 'list',
                         "header": {
                           "type": 'text',
-                          "text": 'Choose Payment Option'
+                          "text": "Hello, here's what you can do with Wa-Pay"
                         },
                         "body": {
-                          "text": 'BODY_TEXT'
+                          "text": 'How would you like to spend today'
                         },
                         "footer": {
-                          "text": 'FOOTER_TEXT'
+                          "text": 'Available payments options'
                         },
                         "action": {
-                          "button": 'BUTTON_TEXT',
+                          "button": 'Make Payments',
                           "sections": [
                             {
-                              "title": 'SECTION_1_TITLE',
+                              "title": 'Send Money',
                               "rows": [
                                 {
-                                  "id": 'SECTION_1_ROW_1_ID',
-                                  "title": 'SECTION_1_ROW_1_TITLE',
-                                  "description": 'SECTION_1_ROW_1_DESCRIPTION'
+                                  "id": 'wallet-to-wallet',
+                                  "title": 'Wallet to Wallet',
+                                  "description": 'Send money to another Wa-Pay wallet'
                                 },
                                 {
-                                  "id": 'SECTION_1_ROW_2_ID',
-                                  "title": 'SECTION_1_ROW_2_TITLE',
-                                  "description": 'SECTION_1_ROW_2_DESCRIPTION'
+                                  "id": 'wallet-to-mpesa',
+                                  "title": 'Wa-Pay to M-Pesa',
+                                  "description": 'Send money to an M-Pesa registered phone'
+                                },
+                                {
+                                  "id": 'wallet-to-bank',
+                                  "title": 'Wa-Pay to Bank',
+                                  "description": 'Send money to a bank account'
                                 }
                               ]
                             },
                             {
-                              "title": 'SECTION_2_TITLE',
+                              "title": 'Shopping & Bills',
                               "rows": [
                                 {
-                                  "id": 'SECTION_2_ROW_1_ID',
-                                  "title": 'SECTION_2_ROW_1_TITLE',
-                                  "description": 'SECTION_2_ROW_1_DESCRIPTION'
+                                  "id": 'wa-pay-business-account',
+                                  "title": 'Wa-Pay Bills',
+                                  "description": 'Send money from wallet to Wa-Pay business account'
+                                }
+                              ]
+                            },
+                            {
+                              "title": 'Airtime and Data',
+                              "rows": [
+                                {
+                                  "id": 'buy-airtime',
+                                  "title": 'Buy Airtime',
+                                  "description": 'Buy airtime with Wa-Pay'
                                 },
                                 {
-                                  "id": 'SECTION_2_ROW_2_ID',
-                                  "title": 'SECTION_2_ROW_2_TITLE',
-                                  "description": 'SECTION_2_ROW_2_DESCRIPTION'
+                                  "id": 'buy-data-bundles',
+                                  "title": 'Buy Data Bundles',
+                                  "description": 'Buy data bundles with Wa-Pay'
                                 }
                               ]
                             }
@@ -154,7 +177,7 @@ module Wapay
                       "type": 'text',
                       "text": {
                         "preview_url": false,
-                        "body": 'Thank you for checking out our product, contact us for more info'
+                        "body": 'Thank you for checking out our product, for more info feel free to contact us'
                       }
                     }
                   end

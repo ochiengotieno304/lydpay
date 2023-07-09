@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4cf1ba31-1c7d-45e2-84f3-89afa6623a58" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gemfile" beforeDir="false" afterPath="$PROJECT_DIR$/Gemfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Rakefile" beforeDir="false" afterPath="$PROJECT_DIR$/Rakefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/providers/persistence.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/providers/persistence.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,6 +137,8 @@
       <workItem from="1688826622258" duration="1480000" />
       <workItem from="1688828118709" duration="2000" />
       <workItem from="1688828514365" duration="5968000" />
+      <workItem from="1688852088497" duration="1599000" />
+      <workItem from="1688854344711" duration="1316000" />
     </task>
     <servers />
   </component>
