@@ -6,5 +6,7 @@ module Wapay
     #
     # setting :my_flag, default: false, constructor: Types::Params::Bool
     setting :database_url, constructor: Types::String
+    setting :mongo_uri, constructor: Types::String
+    setting :sessions_db, constructor: Types::String
   end
 end

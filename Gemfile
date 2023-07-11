@@ -34,6 +34,7 @@ end
 
 gem 'faraday', '~> 2.7'
 gem 'guard-puma', '~> 0.8'
+gem 'mongo', '~> 2.1'
 gem 'pg'
 gem 'rom', '~> 5.3'
 gem 'rom-sql', '~> 3.6'

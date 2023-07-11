@@ -53,7 +53,7 @@ module Wapay
       end
     end
 
-    def self.send_list_message(to_phone, to_name)
+    def self.send_list_message(to_phone, message)
       @conn.post(nil) do |req|
         req.body = {
           "messaging_product": 'whatsapp',
@@ -64,13 +64,13 @@ module Wapay
             "type": 'list',
             "header": {
               "type": 'text',
-              "text": "Hello #{to_name}, here's what you can do with Wa-Pay"
+              "text": message
             },
             "body": {
-              "text": 'How would you like to spend today'
+              "text": 'Let\'s help you spend that 💸 with ease'
             },
             "footer": {
-              "text": 'Available payments options'
+              "text": 'Payments services available'
             },
             "action": {
               "button": 'Make Payments',
