@@ -32,6 +32,7 @@ module Wapay
     end
 
     def self.send_button_message(to_phone, message, buttons)
+      button_actions = buttons.to_json
       @conn.post(nil) do |req|
         req.body = {
           "messaging_product": 'whatsapp',
@@ -44,9 +45,7 @@ module Wapay
               "text": message
             },
             "action": {
-              "buttons": [
-                buttons[0], buttons[1], buttons[2]
-              ]
+              "buttons": button_actions
             }
           }
         }
@@ -67,10 +66,10 @@ module Wapay
               "text": message
             },
             "body": {
-              "text": 'Let\'s help you spend that 💸 with ease'
+              "text": 'Send money, shop & pay bills with ease'
             },
             "footer": {
-              "text": 'Payments services available'
+              "text": 'Payment services available'
             },
             "action": {
               "button": 'Make Payments',

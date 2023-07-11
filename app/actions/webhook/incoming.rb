@@ -22,7 +22,6 @@ module Wapay
 
               from = body.entry[0].changes[0].value.messages[0].from
               from_name = body.entry[0].changes[0].value.contacts[0].profile.name
-              # message = body.entry[0].changes[0].value.messages[0].text.body
               message_type = body.entry[0].changes[0].value.messages[0].type
 
               # SOME LOGIC WAS HERE
@@ -30,16 +29,44 @@ module Wapay
               if user_registered && session_availability
 
                 transfer_type = session_availability.paymentSteps.transferType
-                session_availability.paymentSteps.step
+                step = session_availability.paymentSteps.step.to_i
+                recipient_account = session_availability.paymentSteps.recipientAccount
+                session_availability.paymentSteps.amount
 
                 case message_type
                 when 'text'
+                  message = body.entry[0].changes[0].value.messages[0].text.body
+
                   case transfer_type
                   when 'none'
-                    Requests.send_text_message(from, 'none scenario')
                     Requests.send_list_message(from, "Good afternoon #{from_name}")
                   when 'wallet-to-wallet'
-                    Requests.send_text_message(from, 'wallet to wallet transfer')
+                    case step
+                    when 1
+                      Session.update_session('_id', from, 'paymentSteps.recipientAccount', message)
+                      Session.update_session('_id', from, 'paymentSteps.step', 2)
+                      Requests.send_text_message(from, 'Amount to send')
+                    when 2
+                      Session.update_session('_id', from, 'paymentSteps.amount', message)
+                      Session.update_session('_id', from, 'paymentSteps.step', 3)
+                      confirmation_buttons = [{
+                        "type": 'reply',
+                        "reply": {
+                          "id": 'confirm-transaction',
+                          "title": 'Confirm'
+                        }
+                      }, {
+                        "type": 'reply',
+                        "reply": {
+                          "id": 'cancel-transaction',
+                          "title": 'Cancel'
+                        }
+                      }]
+                      Requests.send_button_message(from, "Send Kes #{message} to #{recipient_account}",
+                                                   confirmation_buttons)
+                    else
+                      # TODO: handle step errors
+                    end
                   when 'bill'
                     Requests.send_text_message(from, 'bills and shopping')
                   else
@@ -56,6 +83,8 @@ module Wapay
                   case button_id
                   when 'wallet-to-wallet'
                     Requests.send_text_message(from, 'Input wallet id to send funds from')
+                    Session.update_session('_id', from, 'paymentSteps.transferType', 'wallet-to-wallet')
+                    Session.update_session('_id', from, 'paymentSteps.step', 1)
                   when 'wallet-to-mpesa'
                     Requests.send_text_message(from, 'Input phone number to send funds to')
                   when 'wallet-to-bank'
