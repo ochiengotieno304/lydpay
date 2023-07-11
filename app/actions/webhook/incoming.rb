@@ -47,7 +47,7 @@ module Wapay
           case transfer_type
           when 'none'
             Requests.send_list_message(from,
-                                       "Good afternoon #{body.entry[0].changes[0].value.contacts[0].profile.name}")
+                                       "#{greeting} #{body.entry[0].changes[0].value.contacts[0].profile.name}")
           when 'wallet-to-wallet'
             handle_wallet_to_wallet(from, step, recipient_account, message)
           when 'bill'
@@ -111,6 +111,18 @@ module Wapay
           else
             # TODO: handle interactive errors
           end
+        end
+
+        def greeting
+          h = Time.now.hour
+          if h < 12
+            g = 'Good morning '
+          elsif h < 18
+            g = 'Good afternoon '
+          else
+            g = 'Good evening '
+          end
+           g
         end
       end
     end
