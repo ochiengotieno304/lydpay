@@ -23,13 +23,13 @@ module Wapay
               transfer_type = session_availability.paymentSteps.transferType
               step = session_availability.paymentSteps.step.to_i
               recipient_account = session_availability.paymentSteps.recipientAccount
-              session_availability.paymentSteps.amount
+              amount = session_availability.paymentSteps.amount
 
               case body.entry[0].changes[0].value.messages[0].type
               when 'text'
                 handle_text_message(from, transfer_type, step, recipient_account, body)
               when 'interactive'
-                handle_interactive_message(from, transfer_type, step, body)
+                handle_interactive_message(from, recipient_account, amount, body)
               else
                 puts 'Unhandled message type'
               end
@@ -88,7 +88,7 @@ module Wapay
           end
         end
 
-        def handle_interactive_message(from, _transfer_type, _step, body)
+        def handle_interactive_message(from, recipient, amount, body)
           button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
                       body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
@@ -105,6 +105,9 @@ module Wapay
             Requests.send_text_message(from, 'Input Wa-Pay business till number')
           when 'buy-airtime'
             Requests.send_text_message(from, 'Input recipient phone')
+          when 'confirm-transaction'
+            Session.update_session('_id', from, 'paymentSteps.confirmed', true)
+            Requests.send_text_message(from, "KES #{amount} sent to #{recipient} successfully")
           else
             # TODO: handle interactive errors
           end
