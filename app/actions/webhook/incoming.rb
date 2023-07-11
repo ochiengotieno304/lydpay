@@ -60,6 +60,12 @@ module Wapay
                     Requests.send_text_message(from, 'Input phone number to send funds to')
                   when 'wallet-to-bank'
                     Requests.send_text_message(from, 'Input card number to send funds to')
+                  when 'wa-pay-business-account'
+                    Requests.send_text_message(from, 'Input Wa-Pay business till number')
+                  when 'buy-airtime'
+                    Requests.send_text_message(from, 'Input recipient phone')
+                  when 'buy-airtime'
+                    Requests.send_text_message(from, 'Input recipient phone')
                   else
                     # TODO: handle interactive errors
                   end

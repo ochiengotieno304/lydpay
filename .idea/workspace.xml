@@ -5,12 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4cf1ba31-1c7d-45e2-84f3-89afa6623a58" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gemfile" beforeDir="false" afterPath="$PROJECT_DIR$/Gemfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gemfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Gemfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/routes.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/routes.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/settings.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/settings.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/wapay/requests.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/requests.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -158,7 +152,7 @@
       <workItem from="1688972983367" duration="2508000" />
       <workItem from="1688986993218" duration="1646000" />
       <workItem from="1688992209251" duration="2844000" />
-      <workItem from="1689003192989" duration="18943000" />
+      <workItem from="1689003192989" duration="19248000" />
     </task>
     <servers />
   </component>
