@@ -18,10 +18,11 @@ module Wapay
     def self.update_session(key, value, key1, value1)
       collection.update_one({ "#{key}": value }, { '$set' => { key1.to_s => value1 } })
     end
+
     def self.update_document(doc_id, update_data)
       collection.update_one(
         { "_id": doc_id },
-        { "$set" => update_data }
+        { '$set' => update_data }
       )
     end
 
