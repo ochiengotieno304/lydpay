@@ -37,7 +37,7 @@ module Wapay
               Requests.send_text_message(from, "Not Registered")
             end
           else
-            response.status = 404
+            response.status = 201
           end
         end
 
