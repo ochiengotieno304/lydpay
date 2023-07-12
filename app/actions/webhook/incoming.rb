@@ -94,11 +94,10 @@ module Wapay
             Session.update_session('_id', account_id, 'paymentSteps.amount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 3)
 
-            Requests.send_button_message(account_id, "Send Kes #{message} to Wa-Pay account #{recipient_account}",
+            Requests.send_button_message(account_id, "Send Kes #{message} to PayChat account #{recipient_account}",
                                          confirmation_buttons)
           when 3
-            Requests.send_text_message(account_id, 'You have a pending transaction')
-            Requests.send_button_message(account_id, "Send Kes #{amount} to Wa-Pay wallet #{recipient_account}",
+            Requests.send_button_message(account_id, "You have a pending transaction\nSend Kes #{amount} to PayChat wallet #{recipient_account}",
                                          confirmation_buttons)
           else
             # TODO: handle step errors
@@ -134,8 +133,7 @@ module Wapay
             Requests.send_button_message(account_id, "Send Kes #{message} to M-Pesa account #{recipient_account}",
                                          confirmation_buttons)
           when 3
-            Requests.send_text_message(account_id, 'You have a pending transaction')
-            Requests.send_button_message(account_id, "Send Kes #{amount} to M-Pesa account #{recipient_account}",
+            Requests.send_button_message(account_id, "You have a pending transaction\nSend Kes #{amount} to M-Pesa account #{recipient_account}",
                                          confirmation_buttons)
           else
             # TODO: handle step errors
@@ -171,8 +169,7 @@ module Wapay
             Requests.send_button_message(account_id, "Send Kes #{message} to bank account #{recipient_account}",
                                          confirmation_buttons)
           when 3
-            Requests.send_text_message(account_id, 'You have a pending transaction')
-            Requests.send_button_message(account_id, "Send Kes #{amount} to bank account #{recipient_account}",
+            Requests.send_button_message(account_id, "You have a pending transaction\nSend Kes #{amount} to bank account #{recipient_account}",
                                          confirmation_buttons)
           else
             # TODO: handle errors
@@ -205,18 +202,15 @@ module Wapay
             Session.update_session('_id', account_id, 'paymentSteps.amount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 3)
 
-            Requests.send_button_message(account_id, "Send Kes #{message} to Wa-Pay business till #{recipient_account}",
+            Requests.send_button_message(account_id, "Send Kes #{message} to PayChat business till #{recipient_account}",
                                          confirmation_buttons)
           when 3
-            Requests.send_text_message(account_id, 'You have a pending transaction')
-            Requests.send_button_message(account_id, "Send Kes #{amount} to Wa-Pay business till #{recipient_account}",
+            Requests.send_button_message(account_id, "You have a pending transaction\nSend Kes #{amount} to PayChat business till #{recipient_account}",
                                          confirmation_buttons)
           else
             # TODO: handle errors
           end
         end
-
-
 
         def handle_interactive_message(session_id, recipient, amount, body, step)
           button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
@@ -244,7 +238,7 @@ module Wapay
             Session.update_session('_id', session_id, 'paymentSteps.step', 1)
           when 'wa-pay-business-account'
             Session.update_session('_id', session_id, 'paymentSteps.transferType', 'wa-pay-business-account')
-            Requests.send_text_message(session_id, 'Input Wa-Pay business till number')
+            Requests.send_text_message(session_id, 'Input PayChat business till number')
             Session.update_session('_id', session_id, 'paymentSteps.step', 1)
           when 'buy-airtime'
             Requests.send_text_message(session_id, 'Input recipient phone')

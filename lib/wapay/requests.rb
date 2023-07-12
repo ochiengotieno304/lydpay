@@ -80,16 +80,16 @@ module Wapay
                     {
                       "id": 'wallet-to-wallet',
                       "title": 'Wallet to Wallet',
-                      "description": 'Send money to another Wa-Pay wallet'
+                      "description": 'Send money to another PayChat wallet'
                     },
                     {
                       "id": 'wallet-to-mpesa',
-                      "title": 'Wa-Pay to M-Pesa',
+                      "title": 'PayChat to M-Pesa',
                       "description": 'Send money to an M-Pesa registered phone'
                     },
                     {
                       "id": 'wallet-to-bank',
-                      "title": 'Wa-Pay to Bank',
+                      "title": 'PayChat to Bank',
                       "description": 'Send money to a bank account'
                     }
                   ]
@@ -99,8 +99,8 @@ module Wapay
                   "rows": [
                     {
                       "id": 'wa-pay-business-account',
-                      "title": 'Wa-Pay Tills',
-                      "description": 'Send money from wallet to Wa-Pay business account'
+                      "title": 'PayChat Tills',
+                      "description": 'Send money from wallet to PayChat business account'
                     }
                   ]
                 },
@@ -110,22 +110,22 @@ module Wapay
                     {
                       "id": 'buy-airtime',
                       "title": 'Buy Airtime',
-                      "description": 'Buy airtime with Wa-Pay'
+                      "description": 'Buy airtime with PayChat'
                     },
                     {
                       "id": 'buy-data-bundles',
                       "title": 'Buy Data Bundles',
-                      "description": 'Buy data bundles with Wa-Pay'
+                      "description": 'Buy data bundles with PayChat'
                     }
                   ]
                 },
                 {
-                  "title": 'Wa-Pay Account',
+                  "title": 'PayChat Account',
                   "rows": [
                     {
                       "id": 'top-up-wallet',
                       "title": 'Top up wallet',
-                      "description": 'Top up your Wa-Pay wallet'
+                      "description": 'Top up your PayChat wallet'
                     },
                     {
                       "id": 'account-balance',
@@ -163,12 +163,12 @@ module Wapay
                 }
               ],
               "name": {
-                "formatted_name": 'Customer Relations, Wa-Pay',
+                "formatted_name": 'Customer Relations, PayChat',
                 "first_name": 'Ochieng',
                 "last_name": 'Otieno'
               },
               "org": {
-                "company": 'Wa-Pay',
+                "company": 'PayChat',
                 "department": 'Customer Relations'
               },
               "phones": [
