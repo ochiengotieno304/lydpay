@@ -13,8 +13,8 @@ module Wapay
           body = JSON.parse(request_body, object_class: OpenStruct)
 
           if body.object && body.entry && body.entry[0].changes &&
-             body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
-             body.entry[0].changes[0].value.messages[0]
+            body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
+            body.entry[0].changes[0].value.messages[0]
 
             from = body.entry[0].changes[0].value.messages[0].from
 
@@ -43,6 +43,8 @@ module Wapay
 
         def handle_text_message(from, transfer_type, step, recipient_account, body)
           message = body.entry[0].changes[0].value.messages[0].text.body
+
+          Requests.send_text_message(from, "Your balance as of #{Time.now.strftime("%d %B, %Y, %I:%M %p")} was KES #{Random.rand(2000)}") if message.downcase == "balance"
 
           case transfer_type
           when 'none'
@@ -90,11 +92,11 @@ module Wapay
 
         def handle_interactive_message(from, recipient, amount, body)
           button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                      body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+            body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           case button_id
           when 'wallet-to-wallet'
-            Requests.send_text_message(from, 'Input wallet id to send funds from')
+            Requests.send_text_message(from, 'Input wallet ID to send funds to')
             Session.update_session('_id', from, 'paymentSteps.transferType', 'wallet-to-wallet')
             Session.update_session('_id', from, 'paymentSteps.step', 1)
           when 'wallet-to-mpesa'
@@ -108,6 +110,15 @@ module Wapay
           when 'confirm-transaction'
             Session.update_session('_id', from, 'paymentSteps.confirmed', true)
             Requests.send_text_message(from, "KES #{amount} sent to #{recipient} successfully")
+            update_data = {
+              "paymentSteps.step" => 0,
+              "paymentSteps.confirmed" => false,
+              "paymentSteps.recipientAccount" => "none",
+              "paymentSteps.transferType" => "none",
+              "paymentSteps.amount" => "none",
+              "timestamp" => Time.now
+            }
+            Session.update_document(from, update_data)
           else
             # TODO: handle interactive errors
           end
@@ -116,13 +127,12 @@ module Wapay
         def greeting
           h = Time.now.hour
           if h < 12
-            g = 'Good morning '
+            'Good morning '
           elsif h < 18
-            g = 'Good afternoon '
+            'Good afternoon '
           else
-            g = 'Good evening '
+            'Good evening '
           end
-           g
         end
       end
     end
