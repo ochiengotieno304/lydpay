@@ -41,33 +41,35 @@ module Wapay
 
         private
 
-        def handle_text_message(from, transfer_type, step, recipient_account, body)
+        def handle_text_message(to, transfer_type, step, recipient_account, body)
           message = body.entry[0].changes[0].value.messages[0].text.body
 
-          Requests.send_text_message(from, "Your balance as of #{Time.now.strftime("%d %B, %Y, %I:%M %p")} was KES #{Random.rand(2000)}") if message.downcase == "balance"
+          Requests.send_text_message(to, "Your balance as of #{Time.now.strftime("%d %B, %Y, %I:%M %p")} was KES #{Random.rand(2000)}") if message.downcase == "balance"
 
           case transfer_type
           when 'none'
-            Requests.send_list_message(from,
+            Requests.send_list_message(to,
                                        "#{greeting} #{body.entry[0].changes[0].value.contacts[0].profile.name}")
           when 'wallet-to-wallet'
-            handle_wallet_to_wallet(from, step, recipient_account, message)
+            handle_wallet_to_wallet(to, step, recipient_account, message)
+          when 'wallet-to-mpesa'
+            handle_wallet_to_mpesa(to, step, recipient_account, message)
           when 'bill'
-            Requests.send_text_message(from, 'bills and shopping')
+            Requests.send_text_message(to, 'bills and shopping')
           else
-            Requests.send_text_message(from, 'No scene')
+            Requests.send_text_message(to, 'No scene')
           end
         end
 
-        def handle_wallet_to_wallet(from, step, recipient_account, message)
+        def handle_wallet_to_wallet(account_id, step, recipient_account, message)
           case step
           when 1
-            Session.update_session('_id', from, 'paymentSteps.recipientAccount', message)
-            Session.update_session('_id', from, 'paymentSteps.step', 2)
-            Requests.send_text_message(from, 'Amount to send')
+            Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 2)
+            Requests.send_text_message(account_id, 'Amount to send')
           when 2
-            Session.update_session('_id', from, 'paymentSteps.amount', message)
-            Session.update_session('_id', from, 'paymentSteps.step', 3)
+            Session.update_session('_id', account_id, 'paymentSteps.amount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 3)
             confirmation_buttons = [
               {
                 type: 'reply',
@@ -84,7 +86,38 @@ module Wapay
                 }
               }
             ]
-            Requests.send_button_message(from, "Send Kes #{message} to #{recipient_account}", confirmation_buttons)
+            Requests.send_button_message(account_id, "Send Kes #{message} to Wa-Pay account #{recipient_account}", confirmation_buttons)
+          else
+            # TODO: handle step errors
+          end
+        end
+
+        def handle_wallet_to_mpesa(account_id, step, recipient_account, message)
+          case step
+          when 1
+            Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 2)
+            Requests.send_text_message(account_id, 'Amount to send')
+          when 2
+            Session.update_session('_id', account_id, 'paymentSteps.amount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 3)
+            confirmation_buttons = [
+              {
+                type: 'reply',
+                reply: {
+                  id: 'confirm-transaction',
+                  title: 'Confirm'
+                }
+              },
+              {
+                type: 'reply',
+                reply: {
+                  id: 'cancel-transaction',
+                  title: 'Cancel'
+                }
+              }
+            ]
+            Requests.send_button_message(account_id, "Send Kes #{message} to M-Pesa account #{recipient_account}", confirmation_buttons)
           else
             # TODO: handle step errors
           end
@@ -96,11 +129,13 @@ module Wapay
 
           case button_id
           when 'wallet-to-wallet'
-            Requests.send_text_message(from, 'Input wallet ID to send funds to')
             Session.update_session('_id', from, 'paymentSteps.transferType', 'wallet-to-wallet')
+            Requests.send_text_message(from, 'Input wallet ID to send funds to')
             Session.update_session('_id', from, 'paymentSteps.step', 1)
           when 'wallet-to-mpesa'
+            Session.update_session('_id', from, 'paymentSteps.transferType', 'wallet-to-mpesa')
             Requests.send_text_message(from, 'Input phone number to send funds to')
+            Session.update_session('_id', from, 'paymentSteps.step', 1)
           when 'wallet-to-bank'
             Requests.send_text_message(from, 'Input card number to send funds to')
           when 'wa-pay-business-account'
