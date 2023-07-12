@@ -99,7 +99,7 @@ module Wapay
                   "rows": [
                     {
                       "id": 'wa-pay-business-account',
-                      "title": 'Wa-Pay Bills',
+                      "title": 'Wa-Pay Tills',
                       "description": 'Send money from wallet to Wa-Pay business account'
                     }
                   ]
@@ -116,6 +116,21 @@ module Wapay
                       "id": 'buy-data-bundles',
                       "title": 'Buy Data Bundles',
                       "description": 'Buy data bundles with Wa-Pay'
+                    }
+                  ]
+                },
+                {
+                  "title": 'Wa-Pay Account',
+                  "rows": [
+                    {
+                      "id": 'top-up-wallet',
+                      "title": 'Top up wallet',
+                      "description": 'Top up your Wa-Pay wallet'
+                    },
+                    {
+                      "id": 'account-balance',
+                      "title": 'Wallet balance',
+                      "description": 'Check wallet balance'
                     }
                   ]
                 }

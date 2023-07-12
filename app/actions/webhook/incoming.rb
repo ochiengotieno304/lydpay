@@ -33,6 +33,8 @@ module Wapay
               else
                 puts 'Unhandled message type'
               end
+            else
+              Requests.send_text_message(from, "Not Registered")
             end
           else
             response.status = 404
@@ -59,8 +61,8 @@ module Wapay
             handle_wallet_to_mpesa(to, step, recipient_account, message, amount)
           when 'wallet-to-bank'
             handle_wallet_to_bank(to, step, recipient_account, message, amount)
-          when 'bill'
-            Requests.send_text_message(to, 'bills and shopping')
+          when 'wa-pay-business-account'
+            handle_wallet_to_business(to, step, recipient_account, message, amount)
           else
             Requests.send_text_message(to, 'No scene')
           end
@@ -177,6 +179,45 @@ module Wapay
           end
         end
 
+        def handle_wallet_to_business(account_id, step, recipient_account, message, amount)
+          confirmation_buttons = [
+            {
+              type: 'reply',
+              reply: {
+                id: 'confirm-transaction',
+                title: 'Confirm'
+              }
+            },
+            {
+              type: 'reply',
+              reply: {
+                id: 'cancel-transaction',
+                title: 'Cancel'
+              }
+            }
+          ]
+          case step
+          when 1
+            Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 2)
+            Requests.send_text_message(account_id, 'Amount to send')
+          when 2
+            Session.update_session('_id', account_id, 'paymentSteps.amount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 3)
+
+            Requests.send_button_message(account_id, "Send Kes #{message} to Wa-Pay business till #{recipient_account}",
+                                         confirmation_buttons)
+          when 3
+            Requests.send_text_message(account_id, 'You have a pending transaction')
+            Requests.send_button_message(account_id, "Send Kes #{amount} to Wa-Pay business till #{recipient_account}",
+                                         confirmation_buttons)
+          else
+            # TODO: handle errors
+          end
+        end
+
+
+
         def handle_interactive_message(session_id, recipient, amount, body, step)
           button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
             body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
@@ -202,7 +243,9 @@ module Wapay
             Requests.send_text_message(session_id, 'Input card number to send funds to')
             Session.update_session('_id', session_id, 'paymentSteps.step', 1)
           when 'wa-pay-business-account'
+            Session.update_session('_id', session_id, 'paymentSteps.transferType', 'wa-pay-business-account')
             Requests.send_text_message(session_id, 'Input Wa-Pay business till number')
+            Session.update_session('_id', session_id, 'paymentSteps.step', 1)
           when 'buy-airtime'
             Requests.send_text_message(session_id, 'Input recipient phone')
           when 'confirm-transaction'
@@ -212,7 +255,7 @@ module Wapay
 
               Session.update_document(session_id, update_data)
             else
-              Requests.send_text_message(session_id, "No pending transactions")
+              Requests.send_text_message(session_id, "No pending transactions to confirm")
               Requests.send_list_message(session_id, "#{greeting} #{body.entry[0].changes[0].value.contacts[0].profile.name}") # profile name
             end
           when 'cancel-transaction'
@@ -220,7 +263,7 @@ module Wapay
               Requests.send_text_message(session_id, "Transfer of KES #{amount} to #{recipient} was canceled")
               Session.update_document(session_id, update_data)
             else
-              Requests.send_text_message(session_id, "No pending transactions")
+              Requests.send_text_message(session_id, "No pending transactions to cancel")
               Requests.send_list_message(session_id, "#{greeting} #{body.entry[0].changes[0].value.contacts[0].profile.name}") # profile name
             end
           else
