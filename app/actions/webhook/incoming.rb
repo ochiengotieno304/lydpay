@@ -13,8 +13,8 @@ module Wapay
           body = JSON.parse(request_body, object_class: OpenStruct)
 
           if body.object && body.entry && body.entry[0].changes &&
-            body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
-            body.entry[0].changes[0].value.messages[0]
+             body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
+             body.entry[0].changes[0].value.messages[0]
 
             from = body.entry[0].changes[0].value.messages[0].from
 
@@ -29,12 +29,12 @@ module Wapay
               when 'text'
                 handle_text_message(from, transfer_type, step, recipient_account, body, amount)
               when 'interactive'
-                handle_interactive_message(from, recipient_account, amount, body, step)
+                handle_interactive_message(from, recipient_account, amount, body, step, transfer_type)
               else
                 puts 'Unhandled message type'
               end
             else
-              Requests.send_text_message(from, "Not Registered")
+              Requests.send_text_message(from, 'Not Registered')
             end
           else
             response.status = 201
@@ -63,8 +63,10 @@ module Wapay
             handle_wallet_to_bank(to, step, recipient_account, message, amount)
           when 'wa-pay-business-account'
             handle_wallet_to_business(to, step, recipient_account, message, amount)
+          when 'buy-airtime'
+            handle_airtime_purchase(to, step, recipient_account, message, amount)
           else
-            Requests.send_text_message(to, 'No scene')
+            # TODO: handle transaction errors
           end
         end
 
@@ -197,12 +199,12 @@ module Wapay
           when 1
             Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 2)
-            Requests.send_text_message(account_id, 'Amount to send')
+            Requests.send_text_message(account_id, 'Amount to top up')
           when 2
             Session.update_session('_id', account_id, 'paymentSteps.amount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 3)
 
-            Requests.send_button_message(account_id, "Send Kes #{message} to PayChat business till #{recipient_account}",
+            Requests.send_button_message(account_id, "Send KES #{message} to PayChat business till #{recipient_account}",
                                          confirmation_buttons)
           when 3
             Requests.send_button_message(account_id, "You have a pending transaction\nSend Kes #{amount} to PayChat business till #{recipient_account}",
@@ -212,9 +214,45 @@ module Wapay
           end
         end
 
-        def handle_interactive_message(session_id, recipient, amount, body, step)
+        def handle_airtime_purchase(account_id, step, recipient_account, message, amount)
+          confirmation_buttons = [
+            {
+              type: 'reply',
+              reply: {
+                id: 'confirm-transaction',
+                title: 'Confirm'
+              }
+            },
+            {
+              type: 'reply',
+              reply: {
+                id: 'cancel-transaction',
+                title: 'Cancel'
+              }
+            }
+          ]
+          case step
+          when 1
+            Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 2)
+            Requests.send_text_message(account_id, 'Amount to send')
+          when 2
+            Session.update_session('_id', account_id, 'paymentSteps.amount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 3)
+
+            Requests.send_button_message(account_id, "Top up KES #{message} airtime for #{recipient_account}",
+                                         confirmation_buttons)
+          when 3
+            Requests.send_button_message(account_id, "You have a pending transaction\nTop up KES #{amount} airtime for #{recipient_account}",
+                                         confirmation_buttons)
+          else
+            # TODO: handle errors
+          end
+        end
+
+        def handle_interactive_message(session_id, recipient, amount, body, step, transfer_type)
           button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-            body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                      body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
           update_data = {
             'paymentSteps.step' => 0,
             'paymentSteps.confirmed' => false,
@@ -241,15 +279,27 @@ module Wapay
             Requests.send_text_message(session_id, 'Input PayChat business till number')
             Session.update_session('_id', session_id, 'paymentSteps.step', 1)
           when 'buy-airtime'
+            Session.update_session('_id', session_id, 'paymentSteps.transferType', 'buy-airtime')
             Requests.send_text_message(session_id, 'Input recipient phone')
+            Session.update_session('_id', session_id, 'paymentSteps.step', 1)
           when 'confirm-transaction'
             if step >= 2
               Session.update_session('_id', session_id, 'paymentSteps.confirmed', true)
-              Requests.send_text_message(session_id, "KES #{amount} sent to #{recipient} successfully")
+              if transfer_type == 'buy-airtime'
+                if recipient.start_with?('0') && (recipient.size == 10)
+                  AirtimeAndData.send_airtime(recipient[1..].rjust(13, '+254'), amount)
+                  Requests.send_text_message(session_id,
+                                             "Airtime top up of KES #{amount} to #{recipient} was successful")
+                else
+                  Requests.send_text_message(session_id, 'Wrong phone number format ')
+                end
+              else
+                Requests.send_text_message(session_id, "KES #{amount} sent to #{recipient} successfully")
+              end
 
               Session.update_document(session_id, update_data)
             else
-              Requests.send_text_message(session_id, "No pending transactions to confirm")
+              Requests.send_text_message(session_id, 'No pending transactions to confirm')
               Requests.send_list_message(session_id, "#{greeting} #{body.entry[0].changes[0].value.contacts[0].profile.name}") # profile name
             end
           when 'cancel-transaction'
@@ -257,7 +307,7 @@ module Wapay
               Requests.send_text_message(session_id, "Transfer of KES #{amount} to #{recipient} was canceled")
               Session.update_document(session_id, update_data)
             else
-              Requests.send_text_message(session_id, "No pending transactions to cancel")
+              Requests.send_text_message(session_id, 'No pending transactions to cancel')
               Requests.send_list_message(session_id, "#{greeting} #{body.entry[0].changes[0].value.contacts[0].profile.name}") # profile name
             end
           else

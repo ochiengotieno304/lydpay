@@ -3,32 +3,4 @@
   <component name="ModuleRunConfigurationManager">
     <shared />
   </component>
-  <component name="RakeTasksCache">
-    <option name="myRootTask">
-      <RakeTaskImpl id="rake">
-        <subtasks>
-          <RakeTaskImpl id="db">
-            <subtasks>
-              <RakeTaskImpl description="Perform migration down (removes all tables)" fullCommand="db:clean" id="clean" />
-              <RakeTaskImpl description="Create a migration (parameters: NAME, VERSION)" fullCommand="db:create_migration[name,version]" id="create_migration[name,version]" />
-              <RakeTaskImpl description="Migrate the database (options [version_number])]" fullCommand="db:migrate[version]" id="migrate[version]" />
-              <RakeTaskImpl description="Perform migration reset (full erase and migration up)" fullCommand="db:reset" id="reset" />
-              <RakeTaskImpl description="" fullCommand="db:create_migration" id="create_migration" />
-              <RakeTaskImpl description="" fullCommand="db:migrate" id="migrate" />
-              <RakeTaskImpl description="" fullCommand="db:rom_configuration" id="rom_configuration" />
-              <RakeTaskImpl description="" fullCommand="db:setup" id="setup" />
-            </subtasks>
-          </RakeTaskImpl>
-          <RakeTaskImpl description="Load the app environment" fullCommand="environment" id="environment" />
-          <RakeTaskImpl description="Run RSpec code examples" fullCommand="spec" id="spec" />
-          <RakeTaskImpl id="assets">
-            <subtasks>
-              <RakeTaskImpl description="" fullCommand="assets:precompile" id="precompile" />
-            </subtasks>
-          </RakeTaskImpl>
-          <RakeTaskImpl description="" fullCommand="default" id="default" />
-        </subtasks>
-      </RakeTaskImpl>
-    </option>
-  </component>
 </module>
