@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4cf1ba31-1c7d-45e2-84f3-89afa6623a58" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/wapay.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/wapay.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/providers/persistence.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/providers/persistence.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/settings.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/settings.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/wapay/airtime_and_data.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/airtime_and_data.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -163,7 +160,7 @@
       <workItem from="1689187569757" duration="1033000" />
       <workItem from="1689232165557" duration="6233000" />
       <workItem from="1689238414997" duration="6589000" />
-      <workItem from="1689246719027" duration="1725000" />
+      <workItem from="1689246719027" duration="7216000" />
     </task>
     <servers />
   </component>
@@ -172,5 +169,16 @@
   </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

@@ -9,13 +9,38 @@ module Wapay
     @endpoint = ENV['AT_ENDPOINT']
 
     def self.send_airtime(recipient, amount)
+      data = {
+        username: @username,
+        recipients: [
+          { phoneNumber: recipient, amount: "KES #{amount}" }
+        ]
+      }
       response = connection.post('/version1/airtime/send') do |req|
         req.headers['apiKey'] = @api_key
         req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        req.body = {
-          username: @username,
-          recipients: [{phoneNumber: recipient, amount: "KES #{amount}"}]
-        }.to_json.to_s
+        payload = URI.encode_www_form(data)
+        puts payload
+        req.body = payload
+
+      end
+
+      puts response.body
+    end
+
+    def self.send_data_bundles(recipient, amount)
+      data = {
+        username: @username,
+        recipients: [
+          { phoneNumber: recipient, amount: "KES #{amount}" }
+        ]
+      }
+      response = connection.post('/mobile/data/request') do |req|
+        req.headers['apiKey'] = @api_key
+        req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        payload = URI.encode_www_form(data)
+        puts payload
+        req.body = payload
+
       end
 
       puts response.body
