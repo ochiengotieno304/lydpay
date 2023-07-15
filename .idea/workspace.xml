@@ -7,7 +7,6 @@
     <list default="true" id="4cf1ba31-1c7d-45e2-84f3-89afa6623a58" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/session.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/session.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,7 +167,7 @@
       <workItem from="1689323022609" duration="3217000" />
       <workItem from="1689326655255" duration="2458000" />
       <workItem from="1689403723039" duration="58000" />
-      <workItem from="1689403798245" duration="28606000" />
+      <workItem from="1689403798245" duration="31242000" />
     </task>
     <servers />
   </component>

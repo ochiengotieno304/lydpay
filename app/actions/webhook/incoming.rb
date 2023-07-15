@@ -127,7 +127,7 @@ module Wapay
                     'timestamp' => Time.now
                   }
                   Session.update_document(from, update_id_data)
-                  Requests.send_text_message(from, 'Please upload id card front image')
+                  Requests.send_text_message(from, 'For verification, please upload id card front image')
                 when 3
                   registration_buttons = [
                     {
@@ -501,8 +501,8 @@ module Wapay
                 Requests.send_text_message(session_id, "KES #{amount} sent to #{recipient} successfully")
                 Session.delete_session(session_id)
               end
-
-              Session.update_document(session_id, update_data)
+              Session.update_document(session_id, update_data) # TODO send sessions to complete sessions
+              Session.delete_session(session_id)
             else
               Requests.send_text_message(session_id, 'No pending transactions to confirm')
               Requests.send_list_message(session_id, "#{greeting} #{body.entry[0].changes[0].value.contacts[0].profile.name}") # profile name
@@ -510,7 +510,7 @@ module Wapay
           when 'cancel-transaction'
             if step >= 2
               Requests.send_text_message(session_id, "Transfer of KES #{amount} to #{recipient} was canceled")
-              Session.update_document(session_id, update_data)
+              Session.update_document(session_id, update_data) # TODO send session to complete sessions
               Session.delete_session(session_id)
             else
               Requests.send_text_message(session_id, 'No pending transactions to cancel')
