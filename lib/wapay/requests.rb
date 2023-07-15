@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'faraday'
+require 'ostruct'
+
 module Wapay
   class Requests
     attr_reader :access_token, :phone_number_id, :conn
@@ -13,6 +15,7 @@ module Wapay
     @conn = Faraday.new("https://graph.facebook.com/v17.0/#{@phone_number_id}/messages?access_token=#{@access_token}") do |f|
       f.request :json
       f.response :json
+      f.response :logger, ::Logger.new($stdout), bodies: true
       f.adapter Faraday.default_adapter
     end
 
@@ -163,7 +166,7 @@ module Wapay
                 }
               ],
               "name": {
-                "formatted_name": 'Customer Relations, PayChat',
+                "formatted_name": 'Customer Relations, LydPay',
                 "first_name": 'Ochieng',
                 "last_name": 'Otieno'
               },
@@ -182,6 +185,16 @@ module Wapay
           ]
         }
       end
+    end
+
+    def self.fetch_media(media_id)
+      conn = Faraday.new(
+        url: 'https://graph.facebook.com/v17.0/'
+      )
+
+      response = conn.get(media_id.to_s)
+      res = JSON.parse(response, object_class: OpenStruct)
+      res.url
     end
   end
 end

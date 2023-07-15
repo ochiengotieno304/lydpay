@@ -15,16 +15,10 @@ module Wapay
           { phoneNumber: recipient, amount: "KES #{amount}" }
         ]
       }
-      response = connection.post('/version1/airtime/send') do |req|
+      connection.post('/version1/airtime/send') do |req|
         req.headers['apiKey'] = @api_key
-        req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        payload = URI.encode_www_form(data)
-        puts payload
-        req.body = payload
-
+        req.body = data
       end
-
-      puts response.body
     end
 
     def self.send_data_bundles(recipient, amount)
@@ -34,16 +28,10 @@ module Wapay
           { phoneNumber: recipient, amount: "KES #{amount}" }
         ]
       }
-      response = connection.post('/mobile/data/request') do |req|
+      connection.post('/mobile/data/request') do |req|
         req.headers['apiKey'] = @api_key
-        req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        payload = URI.encode_www_form(data)
-        puts payload
-        req.body = payload
-
+        req.body = data
       end
-
-      puts response.body
     end
 
     def self.inti_connection

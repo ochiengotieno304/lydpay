@@ -8,15 +8,17 @@ module Wapay
     module Webhook
       class Incoming < Wapay::Action
         def handle(request, response)
-          user_registered = true
+          user_registered = false
           request_body = request.body.read
           body = JSON.parse(request_body, object_class: OpenStruct)
 
           if body.object && body.entry && body.entry[0].changes &&
              body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
              body.entry[0].changes[0].value.messages[0]
+            message_type = body.entry[0].changes[0].value.messages[0].type
 
             from = body.entry[0].changes[0].value.messages[0].from
+            profile_name = body.entry[0].changes[0].value.contacts[0].profile.name
 
             session_availability = Session.find_session('_id', from)
             if user_registered && session_availability
@@ -34,7 +36,160 @@ module Wapay
                 puts 'Unhandled message type'
               end
             else
-              Requests.send_text_message(from, 'Not Registered')
+              registration_buttons = [
+                {
+                  type: 'reply',
+                  reply: {
+                    id: 'sign-up',
+                    title: 'Signup'
+                  }
+                },
+                {
+                  type: 'reply',
+                  reply: {
+                    id: 'info-desk',
+                    title: 'Talk to info desk'
+                  }
+                },
+                {
+                  type: 'reply',
+                  reply: {
+                    id: 'more-info',
+                    title: 'More info'
+                  }
+                }
+              ]
+              if message_type == 'interactive'
+                if session_availability
+                  step = session_availability.registrationSteps.step
+                  # name = session_availability.registrationSteps.name
+                  # id_number = session_availability.registrationSteps.idNumber
+
+                  button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
+                              body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+
+                  if step == 3
+                    update_data = {
+                      'registrationSteps.confirmed' => true,
+                      'timestamp' => Time.now
+                    }
+
+                    if button_id == 'confirm-details'
+
+                      Session.update_document(from, update_data)
+                      Session.delete_session(from)
+                      Requests.send_list_message(from, "Hi #{profile_name}, we are thrilled to have you.")
+                    elsif button_id == 'cancel-registration'
+                      Session.delete_session(from)
+                      Requests.send_text_message(from, "Hi #{profile_name}, your registration was canceled")
+                    end
+                  end
+                else
+                  button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
+                              body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                  case button_id
+                  when 'info-desk'
+                    Requests.send_contact_message(from)
+                  when 'sign-up'
+                    Requests.send_text_message(from, 'Input full official names')
+                    Session.create_session(from, 'general')
+                  else
+                    # TODO: handle errors in registartion
+                  end
+                end
+              elsif session_availability && message_type == 'text'
+                step = session_availability.registrationSteps.step.to_i
+                message = body.entry[0].changes[0].value.messages[0].text.body
+                case step
+                when 0
+                  update_name_data = {
+                    'registrationSteps.step' => 1,
+                    'registrationSteps.name' => message,
+                    'timestamp' => Time.now
+                  }
+                  Session.update_document(from, update_name_data)
+                  Requests.send_text_message(from, 'Input id card number')
+                when 1
+                  update_id_data = {
+                    'registrationSteps.step' => 2,
+                    'registrationSteps.idNumber' => message,
+                    'timestamp' => Time.now
+                  }
+                  Session.update_document(from, update_id_data)
+                  Requests.send_text_message(from, 'Please upload id card front image')
+                when 3
+                  registration_buttons = [
+                    {
+                      type: 'reply',
+                      reply: {
+                        id: 'confirm-details',
+                        title: 'Confirm'
+                      }
+                    },
+                    {
+                      type: 'reply',
+                      reply: {
+                        id: 'edit-details',
+                        title: 'Edit'
+                      }
+                    },
+                    {
+                      type: 'reply',
+                      reply: {
+                        id: 'cancel-registration',
+                        title: 'Cancel'
+                      }
+                    }
+                  ]
+                  name = session_availability.registrationSteps.name
+                  id_number = session_availability.registrationSteps.idNumber
+
+                  Requests.send_button_message(from, "Registration pending\nConfirm details\n\nName: #{name}\nID Number: #{id_number}",
+                                               registration_buttons)
+                end
+              elsif session_availability && message_type == 'image'
+                step = session_availability.registrationSteps.step.to_i
+                name = session_availability.registrationSteps.name
+                id_number = session_availability.registrationSteps.idNumber
+                if step == 2
+                  update_data = {
+                    'registrationSteps.step' => 3,
+                    'timestamp' => Time.now
+                  }
+                  Session.update_document(from, update_data)
+                  # media_id = body.entry[0].changes[0].value.messages[0].image.id
+                  registration_buttons = [
+                    {
+                      type: 'reply',
+                      reply: {
+                        id: 'confirm-details',
+                        title: 'Confirm'
+                      }
+                    },
+                    {
+                      type: 'reply',
+                      reply: {
+                        id: 'edit-details',
+                        title: 'Edit'
+                      }
+                    },
+                    {
+                      type: 'reply',
+                      reply: {
+                        id: 'cancel-registration',
+                        title: 'Cancel'
+                      }
+                    }
+                  ]
+
+                  Requests.send_button_message(from, "Confirm details\n\nName: #{name}\nID Number: #{id_number}",
+                                               registration_buttons)
+                end
+              else
+                Requests.send_button_message(from, "Hi #{profile_name} , welcome to LydPay! We're so glad you're here",
+                                             registration_buttons)
+
+              end
             end
           else
             response.status = 201
@@ -96,10 +251,10 @@ module Wapay
             Session.update_session('_id', account_id, 'paymentSteps.amount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 3)
 
-            Requests.send_button_message(account_id, "Send Kes #{message} to PayChat account #{recipient_account}",
+            Requests.send_button_message(account_id, "Send Kes #{message} to LydPay account #{recipient_account}",
                                          confirmation_buttons)
           when 3
-            Requests.send_button_message(account_id, "You have a pending transaction\nSend Kes #{amount} to PayChat wallet #{recipient_account}",
+            Requests.send_button_message(account_id, "You have a pending transaction\nSend Kes #{amount} to LydPay wallet #{recipient_account}",
                                          confirmation_buttons)
           else
             # TODO: handle step errors
@@ -199,15 +354,15 @@ module Wapay
           when 1
             Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 2)
-            Requests.send_text_message(account_id, 'Amount to top up')
+            Requests.send_text_message(account_id, 'Amount to send')
           when 2
             Session.update_session('_id', account_id, 'paymentSteps.amount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 3)
 
-            Requests.send_button_message(account_id, "Send KES #{message} to PayChat business till #{recipient_account}",
+            Requests.send_button_message(account_id, "Send KES #{message} to LydPay business till #{recipient_account}",
                                          confirmation_buttons)
           when 3
-            Requests.send_button_message(account_id, "You have a pending transaction\nSend Kes #{amount} to PayChat business till #{recipient_account}",
+            Requests.send_button_message(account_id, "You have a pending transaction\nSend Kes #{amount} to LydPay business till #{recipient_account}",
                                          confirmation_buttons)
           else
             # TODO: handle errors
@@ -215,6 +370,42 @@ module Wapay
         end
 
         def handle_airtime_purchase(account_id, step, recipient_account, message, amount)
+          confirmation_buttons = [
+            {
+              type: 'reply',
+              reply: {
+                id: 'confirm-transaction',
+                title: 'Confirm'
+              }
+            },
+            {
+              type: 'reply',
+              reply: {
+                id: 'cancel-transaction',
+                title: 'Cancel'
+              }
+            }
+          ]
+          case step
+          when 1
+            Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 2)
+            Requests.send_text_message(account_id, 'Amount to top up')
+          when 2
+            Session.update_session('_id', account_id, 'paymentSteps.amount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 3)
+
+            Requests.send_button_message(account_id, "Top up KES #{message} airtime for #{recipient_account}",
+                                         confirmation_buttons)
+          when 3
+            Requests.send_button_message(account_id, "You have a pending transaction\nTop up KES #{amount} airtime for #{recipient_account}",
+                                         confirmation_buttons)
+          else
+            # TODO: handle errors
+          end
+        end
+
+        def handle_data_bundle_purchase(account_id, step, recipient_account, message, amount)
           confirmation_buttons = [
             {
               type: 'reply',
@@ -253,6 +444,7 @@ module Wapay
         def handle_interactive_message(session_id, recipient, amount, body, step, transfer_type)
           button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
                       body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+
           update_data = {
             'paymentSteps.step' => 0,
             'paymentSteps.confirmed' => false,
@@ -276,7 +468,7 @@ module Wapay
             Session.update_session('_id', session_id, 'paymentSteps.step', 1)
           when 'wa-pay-business-account'
             Session.update_session('_id', session_id, 'paymentSteps.transferType', 'wa-pay-business-account')
-            Requests.send_text_message(session_id, 'Input PayChat business till number')
+            Requests.send_text_message(session_id, 'Input LydPay business till number')
             Session.update_session('_id', session_id, 'paymentSteps.step', 1)
           when 'buy-airtime'
             Session.update_session('_id', session_id, 'paymentSteps.transferType', 'buy-airtime')

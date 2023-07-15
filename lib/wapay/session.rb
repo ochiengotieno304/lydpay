@@ -26,6 +26,42 @@ module Wapay
       )
     end
 
+    def self.create_session(user_id, session_type)
+      doc = if session_type == 'general'
+              {
+                "_id": user_id.to_s,
+                "context": {
+                  "scope": 'general'
+                },
+                "registrationSteps": {
+                  "step": 0,
+                  "name": 'none',
+                  "idNumber": 'none',
+                  "confirmed": false
+                }, "timestamp": Time.now
+              }
+            else
+              {
+                "_id": 'user_id',
+                "context": {
+                  "scope": 'payments'
+                },
+                "paymentSteps": {
+                  "step": 0,
+                  "transferType": 'none',
+                  "recipientAccount": 'none',
+                  "amount": 'none',
+                  "confirmed": false
+                }, "timestamp": Time.now
+              }
+            end
+      collection.insert_one(doc)
+    end
+
+    def self.delete_session(user_id)
+      collection.delete_one({ _id: user_id })
+    end
+
     def self.init_collection
       client = Mongo::Client.new(ENV['MONGO_URI'], database: 'SessionsDB')
       begin

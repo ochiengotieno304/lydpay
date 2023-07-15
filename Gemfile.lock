@@ -201,6 +201,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
     rspec-support (3.12.1)
+    rtesseract (3.1.2)
     ruby2_keywords (0.0.5)
     sequel (5.68.0)
     shellany (0.0.1)
@@ -230,6 +231,7 @@ DEPENDENCIES
   rake
   rom (~> 5.3)
   rom-sql (~> 3.6)
+  rtesseract
 
 BUNDLED WITH
-   2.4.15
+   2.4.17
