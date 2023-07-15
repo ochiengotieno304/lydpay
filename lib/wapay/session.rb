@@ -29,7 +29,7 @@ module Wapay
     def self.create_session(user_id, session_type)
       doc = if session_type == 'general'
               {
-                "_id": user_id.to_s,
+                "_id": user_id,
                 "context": {
                   "scope": 'general'
                 },
@@ -42,7 +42,7 @@ module Wapay
               }
             else
               {
-                "_id": 'user_id',
+                "_id": user_id,
                 "context": {
                   "scope": 'payments'
                 },

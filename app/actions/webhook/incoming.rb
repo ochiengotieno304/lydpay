@@ -8,32 +8,38 @@ module Wapay
     module Webhook
       class Incoming < Wapay::Action
         def handle(request, response)
-          user_registered = false
           request_body = request.body.read
           body = JSON.parse(request_body, object_class: OpenStruct)
 
           if body.object && body.entry && body.entry[0].changes &&
-             body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
-             body.entry[0].changes[0].value.messages[0]
+            body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
+            body.entry[0].changes[0].value.messages[0]
             message_type = body.entry[0].changes[0].value.messages[0].type
 
             from = body.entry[0].changes[0].value.messages[0].from
             profile_name = body.entry[0].changes[0].value.contacts[0].profile.name
 
-            session_availability = Session.find_session('_id', from)
-            if user_registered && session_availability
-              transfer_type = session_availability.paymentSteps.transferType
-              step = session_availability.paymentSteps.step.to_i
-              recipient_account = session_availability.paymentSteps.recipientAccount
-              amount = session_availability.paymentSteps.amount
+            user_registered = User.available?(from)
 
-              case body.entry[0].changes[0].value.messages[0].type # message type
-              when 'text'
-                handle_text_message(from, transfer_type, step, recipient_account, body, amount)
-              when 'interactive'
-                handle_interactive_message(from, recipient_account, amount, body, step, transfer_type)
+            session_availability = Session.find_session('_id', from)
+            if user_registered
+              if session_availability
+                transfer_type = session_availability.paymentSteps.transferType
+                step = session_availability.paymentSteps.step.to_i
+                recipient_account = session_availability.paymentSteps.recipientAccount
+                amount = session_availability.paymentSteps.amount
+
+                case body.entry[0].changes[0].value.messages[0].type # message type
+                when 'text'
+                  handle_text_message(from, transfer_type, step, recipient_account, body, amount)
+                when 'interactive'
+                  handle_interactive_message(from, recipient_account, amount, body, step, transfer_type)
+                else
+                  puts 'Unhandled message type'
+                end
               else
-                puts 'Unhandled message type'
+                Session.create_session(from, 'payments')
+                Requests.send_list_message(from, "#{greeting} #{profile_name}")
               end
             else
               registration_buttons = [
@@ -41,14 +47,14 @@ module Wapay
                   type: 'reply',
                   reply: {
                     id: 'sign-up',
-                    title: 'Signup'
+                    title: 'Sign Up'
                   }
                 },
                 {
                   type: 'reply',
                   reply: {
                     id: 'info-desk',
-                    title: 'Talk to info desk'
+                    title: 'Info desk'
                   }
                 },
                 {
@@ -66,7 +72,7 @@ module Wapay
                   # id_number = session_availability.registrationSteps.idNumber
 
                   button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                              body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                    body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
                   if step == 3
                     update_data = {
@@ -77,6 +83,11 @@ module Wapay
                     if button_id == 'confirm-details'
 
                       Session.update_document(from, update_data)
+                      name = session_availability.registrationSteps.name
+                      id_number = session_availability.registrationSteps.idNumber
+                      phone = from
+
+                      User.create_user(name, phone, id_number)
                       Session.delete_session(from)
                       Requests.send_list_message(from, "Hi #{profile_name}, we are thrilled to have you.")
                     elsif button_id == 'cancel-registration'
@@ -86,7 +97,7 @@ module Wapay
                   end
                 else
                   button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                              body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                    body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
                   case button_id
                   when 'info-desk'
                     Requests.send_contact_message(from)
@@ -98,7 +109,7 @@ module Wapay
                   end
                 end
               elsif session_availability && message_type == 'text'
-                step = session_availability.registrationSteps.step.to_i
+                step = session_availability.registrationSteps.step
                 message = body.entry[0].changes[0].value.messages[0].text.body
                 case step
                 when 0
@@ -148,7 +159,7 @@ module Wapay
                                                registration_buttons)
                 end
               elsif session_availability && message_type == 'image'
-                step = session_availability.registrationSteps.step.to_i
+                step = session_availability.registrationSteps.step
                 name = session_availability.registrationSteps.name
                 id_number = session_availability.registrationSteps.idNumber
                 if step == 2
@@ -443,7 +454,7 @@ module Wapay
 
         def handle_interactive_message(session_id, recipient, amount, body, step, transfer_type)
           button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                      body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+            body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           update_data = {
             'paymentSteps.step' => 0,
@@ -482,11 +493,13 @@ module Wapay
                   AirtimeAndData.send_airtime(recipient[1..].rjust(13, '+254'), amount)
                   Requests.send_text_message(session_id,
                                              "Airtime top up of KES #{amount} to #{recipient} was successful")
+                  Session.delete_session(session_id)
                 else
                   Requests.send_text_message(session_id, 'Wrong phone number format ')
                 end
               else
                 Requests.send_text_message(session_id, "KES #{amount} sent to #{recipient} successfully")
+                Session.delete_session(session_id)
               end
 
               Session.update_document(session_id, update_data)
@@ -498,6 +511,7 @@ module Wapay
             if step >= 2
               Requests.send_text_message(session_id, "Transfer of KES #{amount} to #{recipient} was canceled")
               Session.update_document(session_id, update_data)
+              Session.delete_session(session_id)
             else
               Requests.send_text_message(session_id, 'No pending transactions to cancel')
               Requests.send_list_message(session_id, "#{greeting} #{body.entry[0].changes[0].value.contacts[0].profile.name}") # profile name
