@@ -26,7 +26,7 @@ module Wapay
       )
     end
 
-    def self.create_session(user_id, session_type)
+    def self.create_session(user_id, session_type, transfer_type = nil)
       doc = if session_type == 'general'
               {
                 "_id": user_id,
@@ -48,7 +48,7 @@ module Wapay
                 },
                 "paymentSteps": {
                   "step": 0,
-                  "transferType": 'none',
+                  "transferType": transfer_type,
                   "recipientAccount": 'none',
                   "amount": 'none',
                   "confirmed": false

@@ -13,6 +13,7 @@ gem 'rake'
 
 group :development, :test do
   gem 'dotenv'
+  gem 'rubocop', require: false
 end
 
 group :cli, :development do
@@ -32,6 +33,7 @@ group :test do
   gem 'rack-test'
 end
 
+gem 'base64'
 gem 'faraday', '~> 2.7'
 gem 'guard-puma', '~> 0.8'
 gem 'mongo', '~> 2.1'

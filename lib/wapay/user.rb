@@ -4,12 +4,12 @@ require 'mongo'
 
 module Wapay
   class User
-
     def self.create_user(name, phone, id_number)
       doc = {
-        name: name,
-        phone: phone,
-        id_number: id_number,
+        name:,
+        phone:,
+        id_number:,
+        balance: 0,
         created_at: Time.now
       }
 
@@ -17,7 +17,7 @@ module Wapay
     end
 
     def self.available?(phone)
-      return true if collection.find({ phone: phone }).first
+      return true if collection.find({ phone: }).first
 
       false
     end

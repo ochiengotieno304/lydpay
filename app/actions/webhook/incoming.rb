@@ -23,6 +23,7 @@ module Wapay
 
             session_availability = Session.find_session('_id', from)
             if user_registered
+              # MPesa.stk_push
               if session_availability
                 transfer_type = session_availability.paymentSteps.transferType
                 step = session_availability.paymentSteps.step.to_i
@@ -35,11 +36,19 @@ module Wapay
                 when 'interactive'
                   handle_interactive_message(from, recipient_account, amount, body, step, transfer_type)
                 else
-                  puts 'Unhandled message type'
+                  # TODO: handle message type errors
                 end
               else
-                Session.create_session(from, 'payments')
-                Requests.send_list_message(from, "#{greeting} #{profile_name}")
+                case message_type
+                when 'text'
+                  Requests.send_list_message(from, "#{greeting} #{profile_name}")
+                when 'interactive'
+                  button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
+                    body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                  Session.create_session(from, 'payments', button_id)
+                else
+                  # TODO: handle message type errors when no session available
+                end
               end
             else
               registration_buttons = [
@@ -229,6 +238,8 @@ module Wapay
             handle_wallet_to_bank(to, step, recipient_account, message, amount)
           when 'wa-pay-business-account'
             handle_wallet_to_business(to, step, recipient_account, message, amount)
+          when 'top-up-wallet'
+            handle_mpesa_recharge(to, step, amount, message)
           when 'buy-airtime'
             handle_airtime_purchase(to, step, recipient_account, message, amount)
           else
@@ -380,6 +391,42 @@ module Wapay
           end
         end
 
+        def handle_mpesa_recharge(account_id, step, amount, message)
+          confirmation_buttons = [
+            {
+              type: 'reply',
+              reply: {
+                id: 'confirm-transaction',
+                title: 'Confirm'
+              }
+            },
+            {
+              type: 'reply',
+              reply: {
+                id: 'cancel-transaction',
+                title: 'Cancel'
+              }
+            }
+          ]
+          case step
+          when 1
+            Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 2)
+            Requests.send_text_message(account_id, 'Amount to top up')
+          when 2
+            Session.update_session('_id', account_id, 'paymentSteps.amount', message)
+            Session.update_session('_id', account_id, 'paymentSteps.step', 3)
+
+            Requests.send_button_message(account_id, "M-Pesa account #{message} will pay KES #{amount} to Lyd Pay",
+                                         confirmation_buttons)
+          when 3
+            Requests.send_button_message(account_id, "You have a pending transaction\nSend top up KES #{amount} to your wallet",
+                                         confirmation_buttons)
+          else
+            # TODO: handle errors
+          end
+        end
+
         def handle_airtime_purchase(account_id, step, recipient_account, message, amount)
           confirmation_buttons = [
             {
@@ -485,6 +532,10 @@ module Wapay
             Session.update_session('_id', session_id, 'paymentSteps.transferType', 'buy-airtime')
             Requests.send_text_message(session_id, 'Input recipient phone')
             Session.update_session('_id', session_id, 'paymentSteps.step', 1)
+          when 'top-up-wallet'
+            Session.update_session('_id', session_id, 'paymentSteps.transferType', 'top-up-wallet')
+            Requests.send_text_message(session_id, 'M-Pesa number to top up from')
+            Session.update_session('_id', session_id, 'paymentSteps.step', 1)
           when 'confirm-transaction'
             if step >= 2
               Session.update_session('_id', session_id, 'paymentSteps.confirmed', true)
@@ -501,7 +552,7 @@ module Wapay
                 Requests.send_text_message(session_id, "KES #{amount} sent to #{recipient} successfully")
                 Session.delete_session(session_id)
               end
-              Session.update_document(session_id, update_data) # TODO send sessions to complete sessions
+              Session.update_document(session_id, update_data) # TODO: send sessions to complete sessions
               Session.delete_session(session_id)
             else
               Requests.send_text_message(session_id, 'No pending transactions to confirm')
@@ -510,7 +561,7 @@ module Wapay
           when 'cancel-transaction'
             if step >= 2
               Requests.send_text_message(session_id, "Transfer of KES #{amount} to #{recipient} was canceled")
-              Session.update_document(session_id, update_data) # TODO send session to complete sessions
+              Session.update_document(session_id, update_data) # TODO: send session to complete sessions
               Session.delete_session(session_id)
             else
               Requests.send_text_message(session_id, 'No pending transactions to cancel')
