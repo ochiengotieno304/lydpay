@@ -163,14 +163,14 @@ module Wapay
 
           if recipient_account.nil?
             Session.update_sessions(user_phone, { recipientAccount: message })
-            Requests.send_text_message(user_phone, 'Amount to top up')
+            Requests.send_text_message(user_phone, 'Amount to send')
           elsif amount.nil?
             bill_amount = message
             Session.update_sessions(user_phone, { amount: bill_amount })
-            Requests.send_button_message(user_phone, "M-Pesa account #{recipient_account} will be charged #{bill_amount}",
+            Requests.send_button_message(user_phone, "Mpes #{recipient_account} will be charged KES #{bill_amount}",
                                          @@confirmation_buttons)
           else
-            Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} deduction from #{recipient_account} ",
+            Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} Mpesa charge#{recipient_account}",
                                          @@confirmation_buttons)
           end
         end
@@ -201,8 +201,8 @@ module Wapay
                 handle_wallet_to_till(session, message)
               when 'buy-airtime'
                 handle_buy_airtime(session, message)
-              when 'wallet-to-up'
-                handle_wallet_to_up(session, message)
+              when 'wallet-top-up'
+                handle_wallet_top_up(session, message)
               end
             end
           else
