@@ -31,18 +31,30 @@ module Wapay
             Session.delete_session(user_id) if session
             Session.create_session(user_id, 'payments', 'wallet-to-till')
             Requests.send_text_message(user_id, 'Till number')
+          when 'buy-airtime'
+            Session.delete_session(user_id) if session
+            Session.create_session(user_id, 'payments', 'buy-airtime')
+            Requests.send_text_message(user_id, 'Top up amount')
           when 'confirm-transaction'
             if session
-              Requests.send_text_message(user_id,
-                                         "Successfully sent KES #{session.amount} to #{session.recipientAccount}")
+              if session.transferType == 'buy-airtime'
+                Requests.send_text_message(user_id, "Top up of KES #{session.amount} was successful")
+              else
+                Requests.send_text_message(user_id,
+                                           "Successfully sent KES #{session.amount} to #{session.recipientAccount}")
+              end
               Session.delete_session(user_id)
             else
               Requests.send_text_message(user_id, 'No pending transactions to confirm')
             end
           when 'cancel-transaction'
             if session
-              Requests.send_text_message(user_id,
-                                         "Cancelled KES #{session.amount} transfer to #{session.recipientAccount}")
+              if session.transferType == 'buy-airtime'
+                Requests.send_text_message(user_id, "Cancelled KES #{session.amount} top up request")
+              else
+                Requests.send_text_message(user_id,
+                                           "Cancelled KES #{session.amount} transfer to #{session.recipientAccount}")
+              end
               Session.delete_session(user_id)
             else
               Requests.send_text_message(user_id, 'No pending transactions to confirm')
@@ -54,7 +66,6 @@ module Wapay
           user_phone = session._id
           amount = session.amount
           recipient_account = session.recipientAccount
-          # state = session.state
 
           if recipient_account.nil?
             Session.update_sessions(user_phone, { recipientAccount: message })
@@ -128,6 +139,20 @@ module Wapay
           end
         end
 
+        def handle_buy_airtime(session, message)
+          user_phone = session._id
+          amount = session.amount
+          bill_account = message
+
+          if amount.nil?
+            Session.update_sessions(user_phone, { amount: bill_account })
+            Requests.send_button_message(user_phone, "Confirm KES #{bill_account} top up", @@confirmation_buttons)
+          else
+            Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} airtime top up",
+                                         @@confirmation_buttons)
+          end
+        end
+
         def handle_text_message(session, request_body = nil)
           message = request_body.entry[0].changes[0].value.messages[0].text.body
           user_phone = request_body.entry[0].changes[0].value.messages[0].from
@@ -152,6 +177,8 @@ module Wapay
                 handle_wallet_to_bank(session, message)
               when 'wallet-to-till'
                 handle_wallet_to_till(session, message)
+              when 'buy-airtime'
+                handle_buy_airtime(session, message)
               end
             end
           else
