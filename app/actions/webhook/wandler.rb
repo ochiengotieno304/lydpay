@@ -10,7 +10,7 @@ module Wapay
 
         def handle_interactive_message(user_id, request_body)
           button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-            request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -35,6 +35,10 @@ module Wapay
             Session.delete_session(user_id) if session
             Session.create_session(user_id, 'payments', 'buy-airtime')
             Requests.send_text_message(user_id, 'Top up amount')
+          when 'wallet-top-up'
+            Session.delete_session(user_id) if session
+            Session.create_session(user_id, 'payments', 'wallet-top-up')
+            Requests.send_text_message(user_id, 'M-Pesa phone number to top up from')
           when 'confirm-transaction'
             if session
               if session.transferType == 'buy-airtime'
@@ -79,7 +83,6 @@ module Wapay
             Requests.send_button_message(user_phone, "Pending transaction\nLyd-Pay wallet #{recipient_account} will receive KES #{amount}",
                                          @@confirmation_buttons)
           end
-
         end
 
         def handle_wallet_to_mpesa(session, message)
@@ -131,7 +134,7 @@ module Wapay
           elsif amount.nil?
             bill_amount = message
             Session.update_sessions(user_phone, { amount: bill_amount })
-            Requests.send_button_message(user_phone, "Till #{recipient_account} will receive KES #{bill_amount}", # TODO replace till with business name
+            Requests.send_button_message(user_phone, "Till #{recipient_account} will receive KES #{bill_amount}", # TODO: replace till with business name
                                          @@confirmation_buttons)
           else
             Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} transfer to till #{recipient_account}",
@@ -149,6 +152,25 @@ module Wapay
             Requests.send_button_message(user_phone, "Confirm KES #{bill_account} top up", @@confirmation_buttons)
           else
             Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} airtime top up",
+                                         @@confirmation_buttons)
+          end
+        end
+
+        def handle_wallet_top_up(session, message)
+          user_phone = session._id
+          amount = session.amount
+          recipient_account = session.recipientAccount
+
+          if recipient_account.nil?
+            Session.update_sessions(user_phone, { recipientAccount: message })
+            Requests.send_text_message(user_phone, 'Amount to top up')
+          elsif amount.nil?
+            bill_amount = message
+            Session.update_sessions(user_phone, { amount: bill_amount })
+            Requests.send_button_message(user_phone, "M-Pesa account #{recipient_account} will be charged #{bill_amount}",
+                                         @@confirmation_buttons)
+          else
+            Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} deduction from #{recipient_account} ",
                                          @@confirmation_buttons)
           end
         end
@@ -179,6 +201,8 @@ module Wapay
                 handle_wallet_to_till(session, message)
               when 'buy-airtime'
                 handle_buy_airtime(session, message)
+              when 'wallet-to-up'
+                handle_wallet_to_up(session, message)
               end
             end
           else
@@ -222,8 +246,8 @@ module Wapay
           body = JSON.parse(request_body, object_class: OpenStruct)
 
           if body.object && body.entry && body.entry[0].changes &&
-            body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
-            body.entry[0].changes[0].value.messages[0]
+             body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
+             body.entry[0].changes[0].value.messages[0]
             message_type = body.entry[0].changes[0].value.messages[0].type
 
             user_phone = body.entry[0].changes[0].value.messages[0].from
