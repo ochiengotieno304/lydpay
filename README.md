@@ -16,3 +16,18 @@
 | **Idea Validation Steps:**                | 1. Analyze the market demand for integrated payment solutions within messaging apps<br>2. Conduct user surveys and interviews to understand pain points and preferences<br>3. Prototype and test the payment and shopping features with a select group of users<br>4. Gather feedback and iterate on the product based on user insights                     |
 | **Estimated 1st Year Cost of Operation:** | $1,000,000 - $2,000,000 (depending on scale and scope)                                                                                                                                                                                                                                                                                                      |
 | **Potential Business Challenges:**        | 1. Navigating complex regulations and compliance requirements in the financial sector<br>2. Building trust and credibility for financial transactions within a messaging app<br>3. Competing with established payment platforms and e-commerce giants<br>4. Ensuring smooth integration and compatibility with various banking systems and payment gateways |
+
+sessions
+
+```json
+{
+  "_id": "254743287562",
+  "state": "init",
+  "recipientAccount": "",
+  "transferType": "wallet-to-wallet",
+  "amount": 0,
+  "createdAt": "",
+  "updatedAt": ""
+}
+
+```

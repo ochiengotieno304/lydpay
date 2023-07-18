@@ -12,7 +12,7 @@ module Wapay
           body = JSON.parse(request_body, object_class: OpenStruct)
           phone = body.phone
 
-          session_availability = Session.find_session('_id', phone)
+          session_availability = Session.find_session(phone)
           puts session_availability
 
           response.body = if session_availability

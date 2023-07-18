@@ -202,6 +202,7 @@ module Wapay
               when 'buy-airtime'
                 handle_buy_airtime(session, message)
               when 'wallet-top-up'
+                MPesa.stk_push
                 handle_wallet_top_up(session, message)
               end
             end

@@ -4,24 +4,27 @@ require 'mongo'
 
 module Wapay
   class Session
-    def self.available?(key, value)
-      return true if collection.find({ "#{key}": value }).first
+    def self.available?(doc_id)
+      return true if collection.find({ _id: doc_id }).first
 
       false
     end
 
-    def self.find_session(key, value)
-      doc = collection.find({ "#{key}": value }).first.to_json
+    def self.find_session(doc_id)
+      doc = collection.find({ _id: doc_id }).first.to_json
       JSON.parse(doc, object_class: OpenStruct)
-    end
-
-    def self.update_session(key, value, key1, value1)
-      collection.update_one({ "#{key}": value }, { '$set' => { key1.to_s => value1 } })
     end
 
     def self.update_document(doc_id, update_data)
       collection.update_one(
-        { "_id": doc_id },
+        { _id: doc_id },
+        { '$set' => update_data }
+      )
+    end
+
+    def self.update_sessions(doc_id, update_data)
+      collection.update_one(
+        { _id: doc_id },
         { '$set' => update_data }
       )
     end
@@ -29,30 +32,25 @@ module Wapay
     def self.create_session(user_id, session_type, transfer_type = nil)
       doc = if session_type == 'general'
               {
-                "_id": user_id,
-                "context": {
-                  "scope": 'general'
-                },
-                "registrationSteps": {
-                  "step": 0,
-                  "name": 'none',
-                  "idNumber": 'none',
-                  "confirmed": false
-                }, "timestamp": Time.now
+                _id: user_id,
+                scope: 'general',
+                step: 0,
+                name: '',
+                idNumber: '',
+                confirmed: false,
+                createdAt: Time.now,
+                updateAt: Time.now
               }
             else
               {
-                "_id": user_id,
-                "context": {
-                  "scope": 'payments'
-                },
-                "paymentSteps": {
-                  "step": 0,
-                  "transferType": transfer_type,
-                  "recipientAccount": 'none',
-                  "amount": 'none',
-                  "confirmed": false
-                }, "timestamp": Time.now
+                _id: user_id,
+                scope: 'payments',
+                state: 'init',
+                transferType: transfer_type,
+                recipientAccount: nil,
+                amount: nil,
+                createdAt: Time.now,
+                updatedAt: Time.now
               }
             end
       collection.insert_one(doc)

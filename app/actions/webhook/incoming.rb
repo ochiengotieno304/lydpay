@@ -12,8 +12,8 @@ module Wapay
           body = JSON.parse(request_body, object_class: OpenStruct)
 
           if body.object && body.entry && body.entry[0].changes &&
-            body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
-            body.entry[0].changes[0].value.messages[0]
+             body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
+             body.entry[0].changes[0].value.messages[0]
             message_type = body.entry[0].changes[0].value.messages[0].type
 
             from = body.entry[0].changes[0].value.messages[0].from
@@ -21,9 +21,8 @@ module Wapay
 
             user_registered = User.available?(from)
 
-            session_availability = Session.find_session('_id', from)
+            session_availability = Session.find_session(from)
             if user_registered
-              # MPesa.stk_push
               if session_availability
                 transfer_type = session_availability.paymentSteps.transferType
                 step = session_availability.paymentSteps.step.to_i
@@ -44,8 +43,15 @@ module Wapay
                   Requests.send_list_message(from, "#{greeting} #{profile_name}")
                 when 'interactive'
                   button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                    body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
-                  Session.create_session(from, 'payments', button_id)
+                              body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+
+                  transfer = if %w[confirm-transaction cancel-transaction].include?(button_id)
+                               'none'
+                             else
+                               button_id
+                             end
+
+                  Session.create_session(from, 'payments', transfer)
                 else
                   # TODO: handle message type errors when no session available
                 end
@@ -81,7 +87,7 @@ module Wapay
                   # id_number = session_availability.registrationSteps.idNumber
 
                   button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                    body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                              body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
                   if step == 3
                     update_data = {
@@ -106,7 +112,7 @@ module Wapay
                   end
                 else
                   button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                    body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                              body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
                   case button_id
                   when 'info-desk'
                     Requests.send_contact_message(from)
@@ -223,7 +229,7 @@ module Wapay
 
           if message.downcase == 'balance'
             Requests.send_text_message(to,
-                                       "Your balance as of #{Time.now.strftime('%d %B, %Y, %I:%M %p')} was KES #{Random.rand(2000)}")
+                                       "Your balance as of #{Time.now.strftime('%d %B, %Y, %I:%M %p')} was KES #{User.user_data(to).balance}")
           end
 
           case transfer_type
@@ -265,6 +271,9 @@ module Wapay
             }
           ]
           case step
+          when 0
+            Requests.send_text_message(account_id, "Recipient's wallet ID")
+            Session.update_session('_id', account_id, 'paymentSteps.step', 1)
           when 1
             Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 2)
@@ -301,6 +310,9 @@ module Wapay
             }
           ]
           case step
+          when 0
+            Requests.send_text_message(account_id, 'Reciepient\'s M-Pesa phone number')
+            Session.update_session('_id', account_id, 'paymentSteps.step', 1)
           when 1
             Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 2)
@@ -337,6 +349,9 @@ module Wapay
             }
           ]
           case step
+          when 0
+            Requests.send_text_message(account_id, 'Recipient card number')
+            Session.update_session('_id', account_id, 'paymentSteps.step', 1)
           when 1
             Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 2)
@@ -373,6 +388,9 @@ module Wapay
             }
           ]
           case step
+          when 0
+            Requests.send_text_message(account_id, 'Lyd-Pay till number')
+            Session.update_session('_id', account_id, 'paymentSteps.step', 1)
           when 1
             Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 2)
@@ -409,6 +427,9 @@ module Wapay
             }
           ]
           case step
+          when 0
+            Requests.send_text_message(account_id, 'M-Pesa phone to top up from')
+            Session.update_session('_id', account_id, 'paymentSteps.step', 1)
           when 1
             Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 2)
@@ -445,6 +466,9 @@ module Wapay
             }
           ]
           case step
+          when 0
+            Requests.send_text_message(account_id, 'Amount to top up')
+            Session.update_session('_id', account_id, 'paymentSteps.step', 1)
           when 1
             Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 2)
@@ -481,6 +505,9 @@ module Wapay
             }
           ]
           case step
+          when 0
+            Requests.send_text_message(account_id, 'Amount to top up')
+            Session.update_session('_id', account_id, 'paymentSteps.step', 1)
           when 1
             Session.update_session('_id', account_id, 'paymentSteps.recipientAccount', message)
             Session.update_session('_id', account_id, 'paymentSteps.step', 2)
@@ -501,7 +528,7 @@ module Wapay
 
         def handle_interactive_message(session_id, recipient, amount, body, step, transfer_type)
           button_id = body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-            body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                      body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           update_data = {
             'paymentSteps.step' => 0,
@@ -548,6 +575,18 @@ module Wapay
                 else
                   Requests.send_text_message(session_id, 'Wrong phone number format ')
                 end
+
+              elsif transfer_type == 'top-up-wallet'
+                session_data = Session.find_session(session_id)
+                bill_account = session_data.paymentSteps.recipientAccount
+                bill_amount = session_data.paymentSteps.amount
+                if bill_account.start_with?('0') && (bill_account.size == 10)
+                  bill_account = bill_account[1..].rjust(12, '254')
+                  Payments.wallet_top_up(session_id, bill_account, bill_amount)
+                else
+                  Requests.send_text_message(session_id, 'Invalid phone format')
+                end
+                Session.delete_session(session_id)
               else
                 Requests.send_text_message(session_id, "KES #{amount} sent to #{recipient} successfully")
                 Session.delete_session(session_id)

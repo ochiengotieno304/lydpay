@@ -83,16 +83,16 @@ module Wapay
                     {
                       "id": 'wallet-to-wallet',
                       "title": 'Wallet to Wallet',
-                      "description": 'Send money to another PayChat wallet'
+                      "description": 'Send money to another LydPay wallet'
                     },
                     {
                       "id": 'wallet-to-mpesa',
-                      "title": 'PayChat to M-Pesa',
+                      "title": 'LydPay to M-Pesa',
                       "description": 'Send money to an M-Pesa registered phone'
                     },
                     {
                       "id": 'wallet-to-bank',
-                      "title": 'PayChat to Bank',
+                      "title": 'LydPay to Bank',
                       "description": 'Send money to a bank account'
                     }
                   ]
@@ -101,9 +101,9 @@ module Wapay
                   "title": 'Shopping & Bills',
                   "rows": [
                     {
-                      "id": 'wa-pay-business-account',
-                      "title": 'PayChat Tills',
-                      "description": 'Send money from wallet to PayChat business account'
+                      "id": 'wallet-to-till',
+                      "title": 'LydPay Tills',
+                      "description": 'Send money from wallet to LydPay business account'
                     }
                   ]
                 },
@@ -113,22 +113,22 @@ module Wapay
                     {
                       "id": 'buy-airtime',
                       "title": 'Buy Airtime',
-                      "description": 'Buy airtime with PayChat'
+                      "description": 'Buy airtime with LydPay'
                     },
                     {
                       "id": 'buy-data-bundles',
                       "title": 'Buy Data Bundles',
-                      "description": 'Buy data bundles with PayChat'
+                      "description": 'Buy data bundles with LydPay'
                     }
                   ]
                 },
                 {
-                  "title": 'PayChat Account',
+                  "title": 'LydPay Account',
                   "rows": [
                     {
-                      "id": 'top-up-wallet',
+                      "id": 'wallet-top-up',
                       "title": 'Top up wallet',
-                      "description": 'Top up your PayChat wallet'
+                      "description": 'Top up your LydPay wallet'
                     },
                     {
                       "id": 'account-balance',
@@ -171,7 +171,7 @@ module Wapay
                 "last_name": 'Otieno'
               },
               "org": {
-                "company": 'PayChat',
+                "company": 'LydPay',
                 "department": 'Customer Relations'
               },
               "phones": [

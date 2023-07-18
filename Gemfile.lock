@@ -1,3 +1,10 @@
+PATH
+  remote: /home/ochi/RubymineProjects/stanbic-ruby
+  specs:
+    stanbic (0.1.1)
+      faraday (~> 2.7, >= 2.7.10)
+      json
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -261,6 +268,7 @@ DEPENDENCIES
   rom-sql (~> 3.6)
   rtesseract
   rubocop
+  stanbic (~> 0.1.1)!
 
 BUNDLED WITH
    2.4.17

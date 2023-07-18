@@ -6,17 +6,8 @@ module Wapay
     get '/webhook', to: 'webhook.verification'
     # post '/webhook', to: 'webhook.incoming'
     post '/webhook', to: 'webhook.wandler'
+    post '/webhook/mpesa', to: 'webhook.mpesa'
     post '/users', to: 'users.create'
     get '/sessions/test', to: 'sessions.test'
-
-    get '/subscriptions/:id',
-        as: :subscription,
-        to: ->(_env) { [200, {}, ['Subscriber 1']] }
-
-    post '/subscribe',
-         as: :subscribe,
-         to: ->(_env) { [201, {}, ['Thanks!!']] }
-
-    redirect '/home', to: '/'
   end
 end

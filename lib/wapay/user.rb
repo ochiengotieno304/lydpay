@@ -16,6 +16,18 @@ module Wapay
       collection.insert_one(doc)
     end
 
+    def self.user_data(user_id)
+      doc = collection.find({ phone: user_id }).first.to_json
+      JSON.parse(doc, object_class: OpenStruct)
+    end
+
+    def self.update_user(user_id, update_data)
+      collection.update_one(
+        { "_id": user_id },
+        { '$set' => update_data }
+      )
+    end
+
     def self.available?(phone)
       return true if collection.find({ phone: }).first
 
