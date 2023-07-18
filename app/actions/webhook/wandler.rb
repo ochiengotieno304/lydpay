@@ -16,12 +16,21 @@ module Wapay
 
           case button_id
           when 'wallet-to-wallet'
-            if session
-              # TODO: handle session available scenario, | delete current session and initialize a new one
-            else
-              Session.create_session(user_id, 'payments', 'wallet-to-wallet')
-              Requests.send_text_message(user_id, 'Wallet ID to send funds to')
-            end
+            Session.delete_session(user_id) if session
+            Session.create_session(user_id, 'payments', 'wallet-to-wallet')
+            Requests.send_text_message(user_id, 'Lyd Pay wallet number')
+          when 'wallet-to-mpesa'
+            Session.delete_session(user_id) if session
+            Session.create_session(user_id, 'payments', 'wallet-to-mpesa')
+            Requests.send_text_message(user_id, 'M-Pesa phone')
+          when 'wallet-to-bank'
+            Session.delete_session(user_id) if session
+            Session.create_session(user_id, 'payments', 'wallet-to-bank')
+            Requests.send_text_message(user_id, 'Card number')
+          when 'wallet-to-till'
+            Session.delete_session(user_id) if session
+            Session.create_session(user_id, 'payments', 'wallet-to-till')
+            Requests.send_text_message(user_id, 'Till number')
           when 'confirm-transaction'
             if session
               Requests.send_text_message(user_id,
@@ -46,7 +55,7 @@ module Wapay
           amount = session.amount
           recipient_account = session.recipientAccount
           # state = session.state
-          
+
           if recipient_account.nil?
             Session.update_sessions(user_phone, { recipientAccount: message })
             Requests.send_text_message(user_phone, 'Amount to send')
@@ -56,10 +65,67 @@ module Wapay
             Requests.send_button_message(user_phone, "Lyd-Pay wallet #{recipient_account} will receive #{bill_amount}",
                                          @@confirmation_buttons)
           else
-            Requests.send_button_message(user_phone, "Pending transaction\nLyd-Pay wallet #{recipient_account} will receive #{amount}",
+            Requests.send_button_message(user_phone, "Pending transaction\nLyd-Pay wallet #{recipient_account} will receive KES #{amount}",
                                          @@confirmation_buttons)
           end
 
+        end
+
+        def handle_wallet_to_mpesa(session, message)
+          user_phone = session._id
+          amount = session.amount
+          recipient_account = session.recipientAccount
+
+          if recipient_account.nil?
+            Session.update_sessions(user_phone, { recipientAccount: message })
+            Requests.send_text_message(user_phone, 'Amount to send')
+          elsif amount.nil?
+            bill_amount = message
+            Session.update_sessions(user_phone, { amount: bill_amount })
+            Requests.send_button_message(user_phone, "M-Pesa account #{recipient_account} will receive KES #{bill_amount}",
+                                         @@confirmation_buttons)
+          else
+            Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} transfer to M-Pesa account #{recipient_account}",
+                                         @@confirmation_buttons)
+          end
+        end
+
+        def handle_wallet_to_bank(session, message)
+          user_phone = session._id
+          amount = session.amount
+          recipient_account = session.recipientAccount
+
+          if recipient_account.nil?
+            Session.update_sessions(user_phone, { recipientAccount: message })
+            Requests.send_text_message(user_phone, 'Amount to send')
+          elsif amount.nil?
+            bill_amount = message
+            Session.update_sessions(user_phone, { amount: bill_amount })
+            Requests.send_button_message(user_phone, "Bank account #{recipient_account} will receive KES #{bill_amount}",
+                                         @@confirmation_buttons)
+          else
+            Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} transfer to M-Pesa account #{recipient_account}",
+                                         @@confirmation_buttons)
+          end
+        end
+
+        def handle_wallet_to_till(session, message)
+          user_phone = session._id
+          amount = session.amount
+          recipient_account = session.recipientAccount
+
+          if recipient_account.nil?
+            Session.update_sessions(user_phone, { recipientAccount: message })
+            Requests.send_text_message(user_phone, 'Amount to send')
+          elsif amount.nil?
+            bill_amount = message
+            Session.update_sessions(user_phone, { amount: bill_amount })
+            Requests.send_button_message(user_phone, "Till #{recipient_account} will receive KES #{bill_amount}", # TODO replace till with business name
+                                         @@confirmation_buttons)
+          else
+            Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} transfer to till #{recipient_account}",
+                                         @@confirmation_buttons)
+          end
         end
 
         def handle_text_message(session, request_body = nil)
@@ -68,7 +134,7 @@ module Wapay
 
           if message.downcase == 'balance'
             Requests.send_text_message(user_phone,
-                                       "Your balance as of #{Time.now.strftime('%d %B, %Y, %I:%M %p')} was KES #{rand(1..40_000)}")
+                                       "Your balance as of #{Time.now.strftime('%d %B, %Y, %I:%M %p')} was KES #{User.user_data(user_phone).balance}")
           end
 
           if session
@@ -80,10 +146,27 @@ module Wapay
               case transfer_type
               when 'wallet-to-wallet'
                 handle_wallet_to_wallet(session, message)
+              when 'wallet-to-mpesa'
+                handle_wallet_to_mpesa(session, message)
+              when 'wallet-to-bank'
+                handle_wallet_to_bank(session, message)
+              when 'wallet-to-till'
+                handle_wallet_to_till(session, message)
               end
             end
           else
-            Requests.send_list_message(user_phone, 'Hello!')
+            Requests.send_list_message(user_phone, greeting)
+          end
+        end
+
+        def greeting
+          h = Time.now.hour
+          if h < 12
+            'Good morning '
+          elsif h < 18
+            'Good afternoon '
+          else
+            'Good evening '
           end
         end
 
