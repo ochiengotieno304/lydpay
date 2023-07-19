@@ -41,18 +41,27 @@ module Wapay
             Requests.send_text_message(user_id, 'M-Pesa phone number to top up from')
           when 'account-balance'
             Requests.send_text_message(user_id,
-                                       "Your balance as of #{Time.now.strftime('%d %B, %Y, %I:%M %p')} was KES #{User.user_data(user_id).balance}")
+                                       "Your balance as of #{@@time} was KES #{User.user_data(user_id).balance}")
           when 'confirm-transaction'
             if session
               transfer_type = session.transferType
               bill_amount = session.amount
               bill_account = session.recipientAccount
 
-              if transfer_type == 'buy-airtime'
+              case transfer_type
+              when 'buy-airtime'
                 Requests.send_text_message(user_id, "Top up of KES #{session.amount} was successful")
-              elsif transfer_type == 'wallet-top-up'
+              when 'wallet-top-up'
                 Requests.send_text_message(user_id, 'Confirm your pin on the Mpesa prompt')
                 MPesa.stk_push(bill_account, bill_amount)
+              when 'wallet-to-wallet'
+                if Payments.send_to_wallet(user_id, bill_account, bill_amount)
+                  Requests.send_text_message(user_id,
+                                             "Successfully sent KES #{bill_amount} to #{bill_account} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}")
+                else
+                  Requests.send_text_message(user_id,
+                                             "Unable to complete KES #{bill_amount} transfer to #{bill_account}")
+                end
               else
                 Requests.send_text_message(user_id,
                                            "Successfully sent KES #{session.amount} to #{session.recipientAccount}")
@@ -71,7 +80,7 @@ module Wapay
               end
               Session.delete_session(user_id)
             else
-              Requests.send_text_message(user_id, 'No pending transactions to confirm')
+              Requests.send_text_message(user_id, 'No pending transactions to cancel')
             end
           end
         end
@@ -254,7 +263,7 @@ module Wapay
               elsif id_number.nil?
                 Session.update_sessions(user_phone, { idNumber: message })
                 Requests.send_button_message(user_phone,
-                                             "Confirm that this are correct\n Name: #{name} \nID: #{message}", reg_confirm_buttons)
+                                             "Confirm that this are correct\n\nName: #{name} \nID: #{message}", reg_confirm_buttons)
               end
             end
           else
@@ -338,6 +347,8 @@ module Wapay
             }
           }
         ]
+
+        @@time = Time.now.strftime('%d %B, %Y, %I:%M %p')
 
         protected
 

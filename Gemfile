@@ -33,6 +33,7 @@ group :test do
   gem 'rack-test'
 end
 
+gem 'activesupport', '~> 7.0', '>= 7.0.6'
 gem 'base64'
 gem 'faraday', '~> 2.7'
 gem 'guard-puma', '~> 0.8'

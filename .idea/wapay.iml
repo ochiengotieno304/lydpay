@@ -59,6 +59,7 @@
         </excluded>
       </library>
     </orderEntry>
+    <orderEntry type="library" scope="PROVIDED" name="activesupport (v7.0.6, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="ast (v2.4.2, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="bson (v4.15.0, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="bundler (v2.4.17, asdf: 3.1.4) [gem]" level="application" />
@@ -101,12 +102,14 @@
     <orderEntry type="library" scope="PROVIDED" name="hanami-utils (v2.0.3, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="hanami-validations (v2.0.1, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="hansi (v0.2.1, asdf: 3.1.4) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="i18n (v1.14.1, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="ice_nine (v0.11.2, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="json (v2.6.3, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="language_server-protocol (v3.17.0.3, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="listen (v3.8.0, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="lumberjack (v1.2.8, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="method_source (v1.0.0, asdf: 3.1.4) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="minitest (v5.18.1, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="mongo (v2.19.0, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="mustermann (v3.0.0, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="mustermann-contrib (v3.0.0, asdf: 3.1.4) [gem]" level="application" />
@@ -145,6 +148,7 @@
     <orderEntry type="library" scope="PROVIDED" name="shellany (v0.0.1, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="thor (v1.2.2, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="transproc (v1.1.1, asdf: 3.1.4) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="tzinfo (v2.0.6, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="unicode-display_width (v2.4.2, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="zeitwerk (v2.6.8, asdf: 3.1.4) [gem]" level="application" />
   </component>

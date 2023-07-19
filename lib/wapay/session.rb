@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'mongo'
+require 'active_support/core_ext/numeric/time'
 
 module Wapay
   class Session
@@ -38,7 +39,8 @@ module Wapay
                 idNumber: nil,
                 confirmed: false,
                 createdAt: Time.now,
-                updateAt: Time.now
+                updateAt: Time.now,
+                validTill: Time.now + 10.minute
               }
             else
               {
@@ -49,7 +51,8 @@ module Wapay
                 recipientAccount: nil,
                 amount: nil,
                 createdAt: Time.now,
-                updatedAt: Time.now
+                updatedAt: Time.now,
+                validTill: Time.now + 10.minute
               }
             end
       collection.insert_one(doc)

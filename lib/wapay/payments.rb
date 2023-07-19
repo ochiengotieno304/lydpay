@@ -19,10 +19,21 @@ module Wapay
 
         User.update_user(user_id, update_data)
         Requests.send_text_message(user_id,
-                                   "Top up of KES #{amount} was successful\nNew wallet balance is KES #{balance}")
+                                   "Top up of KES #{amount} was successful. New wallet balance is KES #{balance}")
       else
         Requests.send_text_message(user_id, "We were unable to process your KES #{amount} top up request")
       end
+    end
+
+    def self.send_to_wallet(from_user_id, to_user_id, amount)
+      from_account_balance = User.user_data(from_user_id).balance
+      to_user_id = to_user_id[1..].rjust(12, '254') if to_user_id.start_with?('0') && (to_user_id.size == 10)
+      to_account_balance = User.user_data(to_user_id).balance
+
+      return unless from_account_balance.positive? && from_account_balance > amount.to_i
+
+      User.update_user(from_user_id, { balance: from_account_balance - amount.to_i })
+      User.update_user(to_user_id, { balance: to_account_balance + amount.to_i})
     end
 
     def self.init_client
