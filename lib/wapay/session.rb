@@ -34,9 +34,8 @@ module Wapay
               {
                 _id: user_id,
                 scope: 'general',
-                step: 0,
-                name: '',
-                idNumber: '',
+                name: nil,
+                idNumber: nil,
                 confirmed: false,
                 createdAt: Time.now,
                 updateAt: Time.now

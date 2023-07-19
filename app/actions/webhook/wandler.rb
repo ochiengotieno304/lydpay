@@ -10,7 +10,7 @@ module Wapay
 
         def handle_interactive_message(user_id, request_body)
           button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+            request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -174,7 +174,7 @@ module Wapay
           elsif amount.nil?
             bill_amount = message
             Session.update_sessions(user_phone, { amount: bill_amount })
-            Requests.send_button_message(user_phone, "Mpes #{recipient_account} will be charged KES #{bill_amount}",
+            Requests.send_button_message(user_phone, "Mpesa #{recipient_account} will be charged KES #{bill_amount}",
                                          @@confirmation_buttons)
           else
             Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} Mpesa charge#{recipient_account}",
@@ -185,6 +185,7 @@ module Wapay
         def handle_text_message(session, request_body = nil)
           message = request_body.entry[0].changes[0].value.messages[0].text.body
           user_phone = request_body.entry[0].changes[0].value.messages[0].from
+          profile_name = request_body.entry[0].changes[0].value.contacts[0].profile.name
 
           if message.downcase == 'balance'
             Requests.send_text_message(user_phone,
@@ -213,7 +214,96 @@ module Wapay
               end
             end
           else
-            Requests.send_list_message(user_phone, greeting)
+            Requests.send_list_message(user_phone, "#{greeting}#{profile_name}")
+          end
+        end
+
+        def handle_unregistered_user_text_message(session, request_body = nil)
+          reg_confirm_buttons = [
+            {
+              type: 'reply',
+              reply: {
+                id: 'confirm-details',
+                title: 'Confirm'
+              }
+            },
+            {
+              type: 'reply',
+              reply: {
+                id: 'cancel-registration',
+                title: 'Cancel'
+              }
+            }
+          ]
+          message = request_body.entry[0].changes[0].value.messages[0].text.body
+          user_phone = request_body.entry[0].changes[0].value.messages[0].from
+          profile_name = request_body.entry[0].changes[0].value.contacts[0].profile.name
+
+          if session
+            scope = session.scope
+            name = session.name
+            id_number = session.idNumber
+
+            if scope == 'general'
+              if name.nil?
+                Session.update_sessions(user_phone, { name: message })
+                Requests.send_text_message(user_phone, 'Id number')
+              elsif id_number.nil?
+                Session.update_sessions(user_phone, { idNumber: message })
+                Requests.send_button_message(user_phone, "Confirm that this are correct\n Name: #{name} \nID: #{message}", reg_confirm_buttons)
+              end
+            end
+          else
+            registration_buttons = [
+              {
+                type: 'reply',
+                reply: {
+                  id: 'sign-up',
+                  title: 'Sign Up'
+                }
+              },
+              {
+                type: 'reply',
+                reply: {
+                  id: 'info-desk',
+                  title: 'Info desk'
+                }
+              },
+              {
+                type: 'reply',
+                reply: {
+                  id: 'more-info',
+                  title: 'More info'
+                }
+              }
+            ]
+
+            Requests.send_button_message(user_phone, "#{greeting}#{profile_name}", registration_buttons)
+          end
+        end
+
+        def handle_unregistered_user_interactive_message(user_id, request_body)
+          button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
+            request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+
+          session = Session.find_session(user_id)
+
+          case button_id
+          when 'sign-up'
+            Session.delete_session(user_id) if session
+            Session.create_session(user_id, 'general', 'sign-up')
+            Requests.send_text_message(user_id, 'Your name')
+          when 'confirm-details'
+            User.create_user(session.name, user_id, session.idNumber)
+            Requests.send_text_message(user_id, "Registration successful")
+            Session.delete_session(user_id)
+          when 'cancel-registration'
+            Requests.send_text_message(user_id, 'Registration cancelled')
+            Session.delete_session(user_id)
+          when 'info-desk'
+            Requests.send_contact_message(user_id)
+          when 'more-info'
+            Requests.send_text_message(user_id, "More info on https://lydpay.co")
           end
         end
 
@@ -253,14 +343,15 @@ module Wapay
           body = JSON.parse(request_body, object_class: OpenStruct)
 
           if body.object && body.entry && body.entry[0].changes &&
-             body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
-             body.entry[0].changes[0].value.messages[0]
+            body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
+            body.entry[0].changes[0].value.messages[0]
             message_type = body.entry[0].changes[0].value.messages[0].type
 
             user_phone = body.entry[0].changes[0].value.messages[0].from
             body.entry[0].changes[0].value.contacts[0].profile.name
 
-            user_registered = true
+            user_registered = User.available?(user_phone)
+
             session = Session.find_session(user_phone)
             if user_registered
               case message_type
@@ -270,7 +361,14 @@ module Wapay
                 handle_interactive_message(user_phone, body)
               end
             else
-              # TODO: handle unregistered user
+              case message_type
+              when 'text'
+                handle_unregistered_user_text_message(session, body)
+              when 'interactive'
+                handle_unregistered_user_interactive_message(user_phone, body)
+              when 'image'
+                # TODO: handle_unregistered_user_image_message(session, body)
+              end
             end
           else
             response.status = 201
