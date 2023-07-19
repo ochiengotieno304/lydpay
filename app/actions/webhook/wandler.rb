@@ -69,6 +69,7 @@ module Wapay
               Session.delete_session(user_id)
             else
               Requests.send_text_message(user_id, 'No pending transactions to confirm')
+              Requests.send_list_message(user, 'Hello, make payments with ease')
             end
           when 'cancel-transaction'
             if session
@@ -81,6 +82,7 @@ module Wapay
               Session.delete_session(user_id)
             else
               Requests.send_text_message(user_id, 'No pending transactions to cancel')
+              Requests.send_list_message(user_id, 'Hello, make payments with ease')
             end
           end
         end
@@ -96,7 +98,11 @@ module Wapay
           elsif amount.nil?
             bill_amount = message
             Session.update_sessions(user_phone, { amount: bill_amount })
-            Requests.send_button_message(user_phone, "Lyd-Pay wallet #{recipient_account} will receive #{bill_amount}",
+            if recipient_account.start_with?('0') && (recipient_account.size == 10)
+              recipient_account = recipient_account[1..].rjust(12,
+                                                               '254')
+            end
+            Requests.send_button_message(user_phone, "#{User.user_data(recipient_account).name} will receive #{bill_amount}",
                                          @@confirmation_buttons)
           else
             Requests.send_button_message(user_phone, "Pending transaction\nLyd-Pay wallet #{recipient_account} will receive KES #{amount}",

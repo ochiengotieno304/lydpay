@@ -32,8 +32,8 @@ module Wapay
 
       return unless from_account_balance.positive? && from_account_balance > amount.to_i
 
-      User.update_user(from_user_id, { balance: from_account_balance - amount.to_i })
-      User.update_user(to_user_id, { balance: to_account_balance + amount.to_i})
+      User.update_user(from_user_id, { 'balance' => from_account_balance - amount.to_i })
+      User.update_user(to_user_id, { 'balance' => to_account_balance + amount.to_i })
     end
 
     def self.init_client
