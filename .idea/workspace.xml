@@ -5,20 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4cf1ba31-1c7d-45e2-84f3-89afa6623a58" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/wapay.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/wapay.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gemfile" beforeDir="false" afterPath="$PROJECT_DIR$/Gemfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gemfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Gemfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/actions/sessions/test.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/sessions/test.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/incoming.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/actions/webhook/wandler.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/wandler.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/routes.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/routes.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/m_pesa.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/m_pesa.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/requests.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/requests.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/session.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/session.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/user.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/user.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -194,7 +183,8 @@
       <workItem from="1689674635731" duration="2959000" />
       <workItem from="1689679592698" duration="18507000" />
       <workItem from="1689698239817" duration="28000" />
-      <workItem from="1689698288141" duration="7970000" />
+      <workItem from="1689698288141" duration="8062000" />
+      <workItem from="1689751629685" duration="354000" />
     </task>
     <servers />
   </component>

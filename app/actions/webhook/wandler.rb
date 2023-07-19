@@ -43,6 +43,9 @@ module Wapay
             if session
               if session.transferType == 'buy-airtime'
                 Requests.send_text_message(user_id, "Top up of KES #{session.amount} was successful")
+              elsif session.transferType == 'wallet-to-up'
+                Requests.send_text_message(user_id, "Confirm your pin on the Mpesa prompt")
+                MPesa.stk_push
               else
                 Requests.send_text_message(user_id,
                                            "Successfully sent KES #{session.amount} to #{session.recipientAccount}")
@@ -202,7 +205,6 @@ module Wapay
               when 'buy-airtime'
                 handle_buy_airtime(session, message)
               when 'wallet-top-up'
-                MPesa.stk_push
                 handle_wallet_top_up(session, message)
               end
             end
