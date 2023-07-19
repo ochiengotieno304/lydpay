@@ -69,7 +69,7 @@ module Wapay
               Session.delete_session(user_id)
             else
               Requests.send_text_message(user_id, 'No pending transactions to confirm')
-              Requests.send_list_message(user, 'Hello, make payments with ease')
+              Requests.send_list_message(user_id, 'Hello, make payments with ease')
             end
           when 'cancel-transaction'
             if session
