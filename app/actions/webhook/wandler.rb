@@ -10,7 +10,7 @@ module Wapay
 
         def handle_interactive_message(user_id, request_body)
           button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-            request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -39,6 +39,9 @@ module Wapay
             Session.delete_session(user_id) if session
             Session.create_session(user_id, 'payments', 'wallet-top-up')
             Requests.send_text_message(user_id, 'M-Pesa phone number to top up from')
+          when 'account-balance'
+            Requests.send_text_message(user_id,
+                                       "Your balance as of #{Time.now.strftime('%d %B, %Y, %I:%M %p')} was KES #{User.user_data(user_id).balance}")
           when 'confirm-transaction'
             if session
               transfer_type = session.transferType
@@ -250,7 +253,8 @@ module Wapay
                 Requests.send_text_message(user_phone, 'Id number')
               elsif id_number.nil?
                 Session.update_sessions(user_phone, { idNumber: message })
-                Requests.send_button_message(user_phone, "Confirm that this are correct\n Name: #{name} \nID: #{message}", reg_confirm_buttons)
+                Requests.send_button_message(user_phone,
+                                             "Confirm that this are correct\n Name: #{name} \nID: #{message}", reg_confirm_buttons)
               end
             end
           else
@@ -284,7 +288,7 @@ module Wapay
 
         def handle_unregistered_user_interactive_message(user_id, request_body)
           button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-            request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -295,7 +299,7 @@ module Wapay
             Requests.send_text_message(user_id, 'Your name')
           when 'confirm-details'
             User.create_user(session.name, user_id, session.idNumber)
-            Requests.send_text_message(user_id, "Registration successful")
+            Requests.send_text_message(user_id, 'Registration successful')
             Session.delete_session(user_id)
           when 'cancel-registration'
             Requests.send_text_message(user_id, 'Registration cancelled')
@@ -303,7 +307,7 @@ module Wapay
           when 'info-desk'
             Requests.send_contact_message(user_id)
           when 'more-info'
-            Requests.send_text_message(user_id, "More info on https://lydpay.co")
+            Requests.send_text_message(user_id, 'More info on https://lydpay.co')
           end
         end
 
@@ -343,8 +347,8 @@ module Wapay
           body = JSON.parse(request_body, object_class: OpenStruct)
 
           if body.object && body.entry && body.entry[0].changes &&
-            body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
-            body.entry[0].changes[0].value.messages[0]
+             body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
+             body.entry[0].changes[0].value.messages[0]
             message_type = body.entry[0].changes[0].value.messages[0].type
 
             user_phone = body.entry[0].changes[0].value.messages[0].from
