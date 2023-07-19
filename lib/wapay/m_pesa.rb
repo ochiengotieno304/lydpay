@@ -6,7 +6,6 @@ require 'base64'
 
 module Wapay
   class MPesa
-
     def self.authorization_token
       response = connection.get('/oauth/v1/generate?grant_type=client_credentials')
       response.body['access_token']
@@ -14,7 +13,8 @@ module Wapay
 
     @timestamp = Time.now.strftime('%Y%m%d%H%M%S')
 
-    def self.stk_push
+    def self.stk_push(bill_account, bill_amount)
+      bill_account = bill_account[1..].rjust(12, '254') if bill_account.start_with?('0') && (bill_account.size == 10)
       response = connection.post('/mpesa/stkpush/v1/processrequest') do |req|
         req.headers = { 'Authorization' => "Bearer #{authorization_token}" }
         req.body = {
@@ -22,13 +22,13 @@ module Wapay
           "Password": Base64.strict_encode64("174379#{ENV['DARAJA_PASS_KEY']}#{@timestamp}"),
           "Timestamp": @timestamp,
           "TransactionType": 'CustomerPayBillOnline',
-          "Amount": 1,
-          "PartyA": 254_708_374_149,
+          "Amount": bill_amount.to_i,
+          "PartyA": bill_account.to_i,
           "PartyB": 174_379,
-          "PhoneNumber": 254_743_287_562,
+          "PhoneNumber": bill_account.to_i,
           "CallBackURL": 'https://3c5334842c52-15660798139000638402.ngrok-free.app/webhook/mpesa',
-          "AccountReference": 'LydPay',
-          "TransactionDesc": 'Payment of X'
+          "AccountReference": 'Lyd-Pay',
+          "TransactionDesc": 'Wallet Top-Up'
         }
       end
 
@@ -48,6 +48,5 @@ module Wapay
     private_class_method def self.connection
       @connection ||= init_connection
     end
-
   end
 end

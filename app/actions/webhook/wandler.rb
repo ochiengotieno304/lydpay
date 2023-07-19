@@ -41,11 +41,15 @@ module Wapay
             Requests.send_text_message(user_id, 'M-Pesa phone number to top up from')
           when 'confirm-transaction'
             if session
-              if session.transferType == 'buy-airtime'
+              transfer_type = session.transferType
+              bill_amount = session.amount
+              bill_account = session.recipientAccount
+
+              if transfer_type == 'buy-airtime'
                 Requests.send_text_message(user_id, "Top up of KES #{session.amount} was successful")
-              elsif session.transferType == 'wallet-to-up'
-                Requests.send_text_message(user_id, "Confirm your pin on the Mpesa prompt")
-                MPesa.stk_push
+              elsif transfer_type == 'wallet-top-up'
+                Requests.send_text_message(user_id, 'Confirm your pin on the Mpesa prompt')
+                MPesa.stk_push(bill_account, bill_amount)
               else
                 Requests.send_text_message(user_id,
                                            "Successfully sent KES #{session.amount} to #{session.recipientAccount}")
