@@ -28,37 +28,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library name="stanbic (v0.1.1) [path][gem]" type="rubylib">
-        <properties>
-          <option name="version" value="4" />
-        </properties>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/bin" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/lib" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/.git" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/test" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/.idea" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/.github" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/bin" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/lib" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/.git" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/test" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/.idea" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/.github" />
-        </SOURCES>
-        <excluded>
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/bin" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/.git" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/test" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/.idea" />
-          <root url="file://$MODULE_DIR$/../stanbic-ruby/.github" />
-        </excluded>
-      </library>
-    </orderEntry>
     <orderEntry type="library" scope="PROVIDED" name="activesupport (v7.0.6, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="ast (v2.4.2, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="bson (v4.15.0, asdf: 3.1.4) [gem]" level="application" />
