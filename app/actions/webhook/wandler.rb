@@ -59,7 +59,7 @@ module Wapay
                   bill_account = bill_account[1..].rjust(12, '254') if bill_account.start_with?('0') && (bill_account.size == 10)
                   Requests.send_text_message(user_id,
                                              "Successfully sent KES #{bill_amount} to #{User.user_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}")
-                  Requests.send_text_message(bill_account, "Received KES #{bill_amount} from #{User.user_data(user_id).name}. New wallet balance was KES #{User.user_data(bill_account).balance} " )
+                  Requests.send_text_message(bill_account, "Received KES #{bill_amount} from #{User.user_data(user_id).name} on #{@@time}. New wallet balance was KES #{User.user_data(bill_account).balance} " )
                 else
                   Requests.send_text_message(user_id,
                                              "Unable to complete KES #{bill_amount} transfer to #{bill_account}")
@@ -198,7 +198,7 @@ module Wapay
 
           if recipient_account.nil?
             Session.update_sessions(user_phone, { recipientAccount: message })
-            Requests.send_text_message(user_phone, 'Amount to send')
+            Requests.send_text_message(user_phone, 'Amount to top up')
           elsif amount.nil?
             bill_amount = message
             Session.update_sessions(user_phone, { amount: bill_amount })
