@@ -27,7 +27,7 @@ module Wapay
           "PartyB": 174_379,
           "PhoneNumber": bill_account.to_i,
           "CallBackURL": 'https://3c5334842c52-15660798139000638402.ngrok-free.app/webhook/mpesa',
-          "AccountReference": 'Lyd-Pay',
+          "AccountReference": 'Lyd Pay Inc',
           "TransactionDesc": 'Wallet Top-Up'
         }
       end

@@ -62,6 +62,11 @@ module Wapay
       collection.delete_one({ _id: user_id })
     end
 
+    def self.filter_session(filter)
+      doc = collection.find(filter).first.to_json
+      JSON.parse(doc, object_class: OpenStruct)
+    end
+
     def self.init_collection
       client = Mongo::Client.new(ENV['MONGO_URI'], database: 'SessionsDB')
       begin
