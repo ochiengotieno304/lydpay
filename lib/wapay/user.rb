@@ -23,7 +23,7 @@ module Wapay
 
     def self.update_user(user_id, update_data)
       collection.update_one(
-        { '_id' => user_id },
+        { 'phone' => user_id },
         { '$set' => update_data }
       )
     end

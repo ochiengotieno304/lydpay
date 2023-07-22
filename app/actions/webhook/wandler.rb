@@ -56,8 +56,18 @@ module Wapay
                 MPesa.stk_push(bill_account, bill_amount)
               when 'wallet-to-wallet'
                 if Payments.send_to_wallet(user_id, bill_account, bill_amount)
+                  bill_account = bill_account[1..].rjust(12, '254') if bill_account.start_with?('0') && (bill_account.size == 10)
                   Requests.send_text_message(user_id,
-                                             "Successfully sent KES #{bill_amount} to #{bill_account} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}")
+                                             "Successfully sent KES #{bill_amount} to #{User.user_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}")
+                  Requests.send_text_message(bill_account, "Received KES #{bill_amount} from #{User.user_data(user_id).name}. New wallet balance was KES #{User.user_data(bill_account).balance} " )
+                else
+                  Requests.send_text_message(user_id,
+                                             "Unable to complete KES #{bill_amount} transfer to #{bill_account}")
+                end
+              when 'wallet-to-till'
+                if Payments.send_to_till(user_id, bill_account, bill_amount)
+                  Requests.send_text_message(user_id,
+                                             "Successfully sent KES #{bill_amount} to #{Till.till_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}")
                 else
                   Requests.send_text_message(user_id,
                                              "Unable to complete KES #{bill_amount} transfer to #{bill_account}")
@@ -102,7 +112,7 @@ module Wapay
               recipient_account = recipient_account[1..].rjust(12,
                                                                '254')
             end
-            Requests.send_button_message(user_phone, "#{User.user_data(recipient_account).name} will receive #{bill_amount}",
+            Requests.send_button_message(user_phone, "#{User.user_data(recipient_account).name} will receive KES #{bill_amount}",
                                          @@confirmation_buttons)
           else
             Requests.send_button_message(user_phone, "Pending transaction\nLyd-Pay wallet #{recipient_account} will receive KES #{amount}",
@@ -159,7 +169,7 @@ module Wapay
           elsif amount.nil?
             bill_amount = message
             Session.update_sessions(user_phone, { amount: bill_amount })
-            Requests.send_button_message(user_phone, "Till #{recipient_account} will receive KES #{bill_amount}", # TODO: replace till with business name
+            Requests.send_button_message(user_phone, "Till #{Till.till_data(recipient_account).name} will receive KES #{bill_amount}", # TODO: replace till with business name
                                          @@confirmation_buttons)
           else
             Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} transfer to till #{recipient_account}",
