@@ -39,6 +39,11 @@ module Wapay
       till_is_available = Till.available?(till_number)
       till_balance = Till.till_data(till_number).balance
 
+      puts 'HERE ' * 10
+      puts from_account_balance
+      puts till_balance
+      puts till_is_available
+
       return unless till_is_available && from_account_balance > amount.to_i
 
       User.update_user(from_user_id, { 'balance' => from_account_balance - amount.to_i })

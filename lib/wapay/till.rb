@@ -5,7 +5,7 @@ require 'mongo'
 module Wapay
   class Till
     def self.available?(till_no)
-      return true if collection.find({ till_no: }).first
+      return true if collection.find({ till: till_no}).first
 
       false
     end
