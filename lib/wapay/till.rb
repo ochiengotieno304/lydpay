@@ -5,7 +5,7 @@ require 'mongo'
 module Wapay
   class Till
     def self.available?(till_no)
-      return true if collection.find({ till: till_no}).first
+      return true if collection.find({ till: till_no }).first
 
       false
     end
@@ -21,7 +21,6 @@ module Wapay
       doc = collection.find({ till: till_number }).first.to_json
       JSON.parse(doc, object_class: OpenStruct)
     end
-
 
     def self.init_collection
       client = Mongo::Client.new(ENV['MONGO_URI'], database: 'BusinessDB')

@@ -22,10 +22,11 @@ module Wapay
             if result_code.zero?
               top_up_amount = body.Body.stkCallback.CallbackMetadata.Item[0].Value.to_i
               Session.update_sessions(user_id, { 'balance' => user_balance + top_up_amount })
-              Requests.send_text_message(user_id, "Top up of KES #{top_up_amount} successful new wallet balance #{user_balance + top_up_amount}")
+              Requests.send_text_message(user_id,
+                                         "Top up of KES #{top_up_amount} successful new wallet balance #{user_balance + top_up_amount}")
               Session.delete_session(user_id)
             elsif result_code == 1032
-              Requests.send_text_message(user_id, "Top up request failed")
+              Requests.send_text_message(user_id, 'Top up request failed')
               Session.delete_session(user_id)
             end
           end

@@ -9,7 +9,9 @@
       <change beforePath="$PROJECT_DIR$/app/actions/webhook/mpesa.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/mpesa.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/actions/webhook/wandler.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/wandler.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/wapay/m_pesa.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/m_pesa.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/session.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/session.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/wapay/payments.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/payments.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/wapay/till.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/till.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/wapay/user.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/user.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,40 +37,45 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": -1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: -1
+}</component>
   <component name="ProjectId" id="2S3XwOTGJaSbmGgMFoedIOLp7nU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultRubyCreateTestTemplate": "RSpec",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/ochi/RubymineProjects/FaeCMS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "ruby.rails.projectView.checked": "true",
-    "ruby.structure.view.model.defaults.configured": "true",
-    "settings.editor.selected.configurable": "editor.preferences.fonts.default",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultRubyCreateTestTemplate&quot;: &quot;RSpec&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/ochi/RubymineProjects/LydPay&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ruby.rails.projectView.checked&quot;: &quot;true&quot;,
+    &quot;ruby.structure.view.model.defaults.configured&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mongo"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mongo&quot;
     ]
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
   <component name="RunManager" selected="Rails.wapay">
     <configuration name="wapay" type="RailsRunConfigurationType" factoryName="Rails">
       <module name="wapay" />
@@ -199,7 +206,9 @@
       <workItem from="1689845861821" duration="756000" />
       <workItem from="1689923808985" duration="6549000" />
       <workItem from="1689963930143" duration="601000" />
-      <workItem from="1690013432501" duration="16150000" />
+      <workItem from="1690013432501" duration="19849000" />
+      <workItem from="1690066601907" duration="3847000" />
+      <workItem from="1690105158524" duration="3910000" />
     </task>
     <servers />
   </component>

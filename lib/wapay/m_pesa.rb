@@ -35,6 +35,25 @@ module Wapay
       response.body
     end
 
+    def self.b_2_c(bill_amount, bill_account)
+      bill_account = bill_account[1..].rjust(12, '254') if bill_account.start_with?('0') && (bill_account.size == 10)
+      connection.post('/mpesa/b2c/v1/paymentrequest') do |req|
+        req.headers = { 'Authorization' => "Bearer #{authorization_token}" }
+        request.body = {
+          "InitiatorName": 'Lyd Pay Inc',
+          "SecurityCredential": '',
+          "CommandID": 'BusinessPayment',
+          "Amount": bill_amount,
+          "PartyA": 174_379,
+          "PartyB": bill_account,
+          "Remarks": 'Test remarks',
+          "QueueTimeOutURL": 'https://mydomain.com/b2c/queue',
+          "ResultURL": 'https://mydomain.com/b2c/result',
+          "Occassion": ''
+        }
+      end
+    end
+
     def self.init_connection
       @connection = Faraday.new('https://sandbox.safaricom.co.ke') do |f|
         f.request :json

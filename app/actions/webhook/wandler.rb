@@ -56,31 +56,39 @@ module Wapay
                 mpesa_response = MPesa.stk_push(bill_account, bill_amount)
                 merchant_request_id = mpesa_response['MerchantRequestID']
                 checkout_request_id = mpesa_response['CheckoutRequestID']
-                transaction_data = { 'merchantRequestId' => merchant_request_id, 'checkoutRequestId' => checkout_request_id }
+                transaction_data = { 'merchantRequestId' => merchant_request_id,
+                                     'checkoutRequestId' => checkout_request_id }
                 Session.update_sessions(user_id, transaction_data)
               when 'wallet-to-wallet'
                 if Payments.send_to_wallet(user_id, bill_account, bill_amount)
-                  bill_account = bill_account[1..].rjust(12, '254') if bill_account.start_with?('0') && (bill_account.size == 10)
+                  if bill_account.start_with?('0') && (bill_account.size == 10)
+                    bill_account = bill_account[1..].rjust(12, '254')
+                  end
                   Requests.send_text_message(user_id,
                                              "Successfully sent KES #{bill_amount} to #{User.user_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}")
-                  Requests.send_text_message(bill_account, "Received KES #{bill_amount} from #{User.user_data(user_id).name} on #{@@time}. New wallet balance was KES #{User.user_data(bill_account).balance} ")
+                  Requests.send_text_message(bill_account,
+                                             "Received KES #{bill_amount} from #{User.user_data(user_id).name} on #{@@time}. New wallet balance was KES #{User.user_data(bill_account).balance} ")
                 else
                   Requests.send_text_message(user_id,
                                              "Unable to complete KES #{bill_amount} transfer to #{bill_account}")
                 end
               when 'wallet-to-till'
-                if Payments.send_to_till(user_id, bill_account, bill_amount)
+                transaction_code = Payments.send_to_till(user_id, bill_account, bill_amount)
+                case transaction_code
+                when 'ACC01'
                   Requests.send_text_message(user_id,
                                              "Successfully sent KES #{bill_amount} to #{Till.till_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}")
-                else
+                when 'ERR01'
                   Requests.send_text_message(user_id,
-                                             "Unable to complete KES #{bill_amount} transfer to #{bill_account}")
+                                             "Unable to complete KES #{bill_amount} transfer to #{bill_account}, insufficient funds")
+                when 'ERR02'
+                  Requests.send_text_message(user_id,
+                                             "Unable to complete transaction, #{bill_account} unavailable")
                 end
               else
-                Requests.send_text_message(user_id,
-                                           "Successfully sent KES #{session.amount} to #{session.recipientAccount}")
+                # TODO handle other error codes
               end
-              # Session.delete_session(user_id)
+              Session.delete_session(user_id)
             else
               Requests.send_text_message(user_id, 'No pending transactions to confirm')
               Requests.send_list_message(user_id, 'Hello, make payments with ease')

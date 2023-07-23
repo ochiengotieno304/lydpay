@@ -29,7 +29,7 @@ module Wapay
     end
 
     def self.available?(phone)
-      return true if collection.find({ phone: phone }).first
+      return true if collection.find({ phone: }).first
 
       false
     end

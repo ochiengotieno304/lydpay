@@ -37,17 +37,20 @@ module Wapay
     def self.send_to_till(from_user_id, till_number, amount)
       from_account_balance = User.user_data(from_user_id).balance
       till_is_available = Till.available?(till_number)
-      till_balance = Till.till_data(till_number).balance
 
-      puts 'HERE ' * 10
-      puts from_account_balance
-      puts till_balance
-      puts till_is_available
+      if till_is_available
+        till_balance = Till.till_data(till_number).balance
 
-      return unless till_is_available && from_account_balance > amount.to_i
-
-      User.update_user(from_user_id, { 'balance' => from_account_balance - amount.to_i })
-      Till.update_till(till_number, { 'balance' => till_balance + amount.to_i })
+        if from_account_balance > amount.to_i
+          User.update_user(from_user_id, { 'balance' => from_account_balance - amount.to_i })
+          Till.update_till(till_number, { 'balance' => till_balance + amount.to_i })
+          'ACC01'
+        else
+          'ERR01'
+        end
+      else
+        'ERR02'
+      end
     end
   end
 end
