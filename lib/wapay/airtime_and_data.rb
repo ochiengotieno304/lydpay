@@ -9,12 +9,8 @@ module Wapay
     @endpoint = ENV['AT_ENDPOINT']
 
     def self.send_airtime(recipient, amount)
-      data = {
-        username: @username,
-        recipients: [
-          { phoneNumber: recipient, amount: "KES #{amount}" }
-        ]
-      }
+      data = { 'username' => 'sandbox',
+               'recipients' => "[{\"phoneNumber\": \"#{recipient}\",\"amount\": \"KES #{amount}\" }]" }
       connection.post('/version1/airtime/send') do |req|
         req.headers['apiKey'] = @api_key
         req.body = data
