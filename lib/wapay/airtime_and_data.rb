@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'faraday'
+require 'ostruct'
 
 module Wapay
   class AirtimeAndData
@@ -9,11 +10,28 @@ module Wapay
     @endpoint = ENV['AT_ENDPOINT']
 
     def self.send_airtime(recipient, amount)
-      data = { 'username' => 'sandbox',
-               'recipients' => "[{\"phoneNumber\": \"#{recipient}\",\"amount\": \"KES #{amount}\" }]" }
-      connection.post('/version1/airtime/send') do |req|
-        req.headers['apiKey'] = @api_key
-        req.body = data
+      from_account_balance = User.user_data(recipient).balance
+
+      if from_account_balance > amount.to_i
+        int_recipient = recipient[1..].rjust(13, '+254')
+        data = { 'username' => 'sandbox',
+                 'recipients' => "[{\"phoneNumber\": \"#{int_recipient}\",\"amount\": \"KES #{amount}\" }]" }
+        response = connection.post('/version1/airtime/send') do |req|
+          req.headers['apiKey'] = @api_key
+          req.body = data
+        end
+
+        res = JSON.parse(response.body.to_json, object_class: OpenStruct)
+        if res.errorMessage == 'None'
+          if res.responses[0].status == 'Sent'
+            User.update_user(recipient, { 'balance' => from_account_balance - amount.to_i })
+            'ACC01'
+          end
+        else
+          'ERR03' # request not complete
+        end
+      else
+        'ERR01' # insufficient funds
       end
     end
 
@@ -32,6 +50,7 @@ module Wapay
 
     def self.inti_connection
       @connection = Faraday.new(@endpoint) do |f|
+        f.headers['Accept'] = 'application/json'
         f.request :url_encoded
         f.response :json
         f.response :logger, ::Logger.new($stdout), bodies: true

@@ -50,7 +50,19 @@ module Wapay
 
               case transfer_type
               when 'buy-airtime'
-                Requests.send_text_message(user_id, "Top up of KES #{session.amount} was successful")
+                transaction_code = AirtimeAndData.send_airtime(user_id, bill_amount)
+                case transaction_code
+                when 'ACC01'
+                  Requests.send_text_message(user_id,
+                                             "Airtime top up worth KES #{bill_amount} on #{@@time} successful. New wallet balance KES #{User.user_data(user_id).balance}")
+                when 'ERR01'
+                  Requests.send_text_message(user_id,
+                                             "Unable to complete KES #{bill_amount} airtime top up, insufficient funds")
+                when 'ERR03'
+                  Requests.send_text_message(user_id,
+                                             "Unable to complete transaction, please try again later or contact customer care")
+                  Requests.send_contact_message(user_id)
+                end
               when 'wallet-top-up'
                 Requests.send_text_message(user_id, 'Confirm your pin on the Mpesa prompt')
                 mpesa_response = MPesa.stk_push(bill_account, bill_amount)
@@ -86,7 +98,8 @@ module Wapay
                                              "Unable to complete transaction, #{bill_account} unavailable")
                 end
               else
-                # TODO handle other error codes
+                Requests.send_text_message(user_id,
+                                           "Successfully sent KES #{session.amount} to #{session.recipientAccount}")
               end
               Session.delete_session(user_id)
             else
@@ -229,7 +242,7 @@ module Wapay
 
           if message.downcase == 'balance'
             Requests.send_text_message(user_phone,
-                                       "Your balance as of #{Time.now.strftime('%d %B, %Y, %I:%M %p')} was KES #{User.user_data(user_phone).balance}")
+                                       "Your balance as of #{@@time} was KES #{User.user_data(user_phone).balance}")
           end
 
           if session
@@ -376,7 +389,7 @@ module Wapay
           }
         ]
 
-        @@time = Time.now.strftime('%d %B, %Y, %I:%M %p')
+        @@time = Time.now.strftime('%d/%m/%Y, %I:%M %p')
 
         protected
 
