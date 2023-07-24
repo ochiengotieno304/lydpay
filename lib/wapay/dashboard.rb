@@ -3,7 +3,7 @@
 require 'mongo'
 
 module Wapay
-  class User
+  class Dashboard
     def self.create_user(name, phone, id_number)
       doc = {
         name:,
@@ -26,12 +26,6 @@ module Wapay
         { 'phone' => user_id },
         { '$set' => update_data }
       )
-    end
-
-    def self.available?(phone)
-      return true if collection.find({ phone: }).first
-
-      false
     end
 
     def self.all_users

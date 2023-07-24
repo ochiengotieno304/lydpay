@@ -10,7 +10,7 @@ module Wapay
 
         def handle_interactive_message(user_id, request_body)
           button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+            request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -76,8 +76,9 @@ module Wapay
                   if bill_account.start_with?('0') && (bill_account.size == 10)
                     bill_account = bill_account[1..].rjust(12, '254')
                   end
-                  Requests.send_text_message(user_id,
-                                             "Successfully sent KES #{bill_amount} to #{User.user_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}")
+                  message = "Successfully sent KES #{bill_amount} to #{User.user_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}"
+                  Requests.send_text_message(user_id, message)
+                  Sms.send_sms(user_id, message)
                   Requests.send_text_message(bill_account,
                                              "Received KES #{bill_amount} from #{User.user_data(user_id).name} on #{@@time}. New wallet balance was KES #{User.user_data(bill_account).balance} ")
                 else
@@ -347,7 +348,7 @@ module Wapay
 
         def handle_unregistered_user_interactive_message(user_id, request_body)
           button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+            request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -408,8 +409,8 @@ module Wapay
           body = JSON.parse(request_body, object_class: OpenStruct)
 
           if body.object && body.entry && body.entry[0].changes &&
-             body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
-             body.entry[0].changes[0].value.messages[0]
+            body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
+            body.entry[0].changes[0].value.messages[0]
             message_type = body.entry[0].changes[0].value.messages[0].type
 
             user_phone = body.entry[0].changes[0].value.messages[0].from

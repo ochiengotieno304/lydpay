@@ -44,3 +44,5 @@ gem 'rom-sql', '~> 3.6'
 gem 'rtesseract'
 # gem 'stanbic', '~> 0.1.1', path: '/home/ochi/RubymineProjects/stanbic-ruby'
 gem 'openssl', '~> 3.1'
+
+gem "rack-cors", "~> 2.0"

@@ -15,5 +15,7 @@ module Wapay
     post '/webhook/mpesa/b2c/queue',
          as: :b2c_queue,
          to: ->(env) { [202, {}, ['']] }
+    get "/users", to: "users.index"
+    patch "/users/:id", to: "users.update"
   end
 end

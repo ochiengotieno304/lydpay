@@ -93,6 +93,7 @@
     <orderEntry type="library" scope="PROVIDED" name="puma (v6.3.0, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="racc (v1.6.2, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rack (v2.2.7, asdf: 3.1.4) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rack-cors (v2.0.1, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rack-test (v2.1.0, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rainbow (v3.1.1, asdf: 3.1.4) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rake (v13.0.6, asdf: 3.1.4) [gem]" level="application" />
