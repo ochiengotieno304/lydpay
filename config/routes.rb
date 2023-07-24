@@ -9,5 +9,11 @@ module Wapay
     post '/webhook/mpesa', to: 'webhook.mpesa'
     post '/users', to: 'users.create'
     get '/sessions/test', to: 'sessions.test'
+    post '/webhook/mpesa/b2c',
+         as: :b2c,
+         to: ->(env) { [202, {}, ['']] }
+    post '/webhook/mpesa/b2c/queue',
+         as: :b2c_queue,
+         to: ->(env) { [202, {}, ['']] }
   end
 end

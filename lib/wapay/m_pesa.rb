@@ -3,6 +3,7 @@
 require 'faraday'
 require 'ostruct'
 require 'base64'
+require 'openssl'
 
 module Wapay
   class MPesa
@@ -37,21 +38,23 @@ module Wapay
 
     def self.b_2_c(bill_amount, bill_account)
       bill_account = bill_account[1..].rjust(12, '254') if bill_account.start_with?('0') && (bill_account.size == 10)
-      connection.post('/mpesa/b2c/v1/paymentrequest') do |req|
+      response = connection.post('/mpesa/b2c/v1/paymentrequest') do |req|
         req.headers = { 'Authorization' => "Bearer #{authorization_token}" }
-        request.body = {
-          "InitiatorName": 'Lyd Pay Inc',
-          "SecurityCredential": '',
+        req.body = {
+          "InitiatorName": ENV['DARAJA_INITIATOR_NAME'],
+          "SecurityCredential": credential(ENV['DARAJA_INITIATOR_PASSWORD']),
           "CommandID": 'BusinessPayment',
           "Amount": bill_amount,
-          "PartyA": 174_379,
+          "PartyA": 600_997,
           "PartyB": bill_account,
           "Remarks": 'Test remarks',
-          "QueueTimeOutURL": 'https://mydomain.com/b2c/queue',
-          "ResultURL": 'https://mydomain.com/b2c/result',
+          "QueueTimeOutURL": 'https://3c5334842c52-15660798139000638402.ngrok-free.app/webhook/mpesa/b2c/queue',
+          "ResultURL": 'https://3c5334842c52-15660798139000638402.ngrok-free.app/webhook/mpesa/b2c',
           "Occassion": ''
         }
       end
+
+      JSON.parse(response.body.to_json, object_class: OpenStruct)
     end
 
     def self.init_connection
@@ -64,6 +67,12 @@ module Wapay
       end
     end
 
+    private_class_method def self.credential(initiator_password)
+      raw = File.read(File.join(File.dirname(__FILE__), '../../sandbox.pem'))
+      cert = OpenSSL::X509::Certificate.new(raw)
+      key = cert.public_key
+      Base64.strict_encode64(key.public_encrypt(initiator_password))
+    end
     private_class_method def self.connection
       @connection ||= init_connection
     end

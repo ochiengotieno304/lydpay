@@ -10,7 +10,7 @@ module Wapay
 
         def handle_interactive_message(user_id, request_body)
           button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-            request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -41,7 +41,7 @@ module Wapay
             Requests.send_text_message(user_id, 'M-Pesa phone number to top up from')
           when 'account-balance'
             Requests.send_text_message(user_id,
-                                       "Your balance as of #{@@time} was KES #{User.user_data(user_id).balance}")
+                                       "Your balance on #{@@time} was KES #{User.user_data(user_id).balance}")
           when 'confirm-transaction'
             if session
               transfer_type = session.transferType
@@ -60,7 +60,7 @@ module Wapay
                                              "Unable to complete KES #{bill_amount} airtime top up, insufficient funds")
                 when 'ERR03'
                   Requests.send_text_message(user_id,
-                                             "Unable to complete transaction, please try again later or contact customer care")
+                                             'Unable to complete transaction, please try again later or contact customer care')
                   Requests.send_contact_message(user_id)
                 end
               when 'wallet-top-up'
@@ -97,6 +97,15 @@ module Wapay
                   Requests.send_text_message(user_id,
                                              "Unable to complete transaction, #{bill_account} unavailable")
                 end
+              when 'wallet-to-mpesa'
+                transaction_code = MPesa.b_2_c(bill_amount, bill_account).ResponseCode
+
+                if transaction_code == '0'
+                  Requests.send_text_message(user_id, "Processing payment, we'll send confirmation message when complete")
+                else
+                  Requests.send_text_message(user_id, "Payment request failed")
+                end
+
               else
                 Requests.send_text_message(user_id,
                                            "Successfully sent KES #{session.amount} to #{session.recipientAccount}")
@@ -242,7 +251,7 @@ module Wapay
 
           if message.downcase == 'balance'
             Requests.send_text_message(user_phone,
-                                       "Your balance as of #{@@time} was KES #{User.user_data(user_phone).balance}")
+                                       "Your balance on #{@@time} was KES #{User.user_data(user_phone).balance}")
           end
 
           if session
@@ -338,7 +347,7 @@ module Wapay
 
         def handle_unregistered_user_interactive_message(user_id, request_body)
           button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-            request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -399,8 +408,8 @@ module Wapay
           body = JSON.parse(request_body, object_class: OpenStruct)
 
           if body.object && body.entry && body.entry[0].changes &&
-            body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
-            body.entry[0].changes[0].value.messages[0]
+             body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
+             body.entry[0].changes[0].value.messages[0]
             message_type = body.entry[0].changes[0].value.messages[0].type
 
             user_phone = body.entry[0].changes[0].value.messages[0].from

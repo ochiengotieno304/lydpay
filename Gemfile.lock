@@ -161,6 +161,7 @@ GEM
     notiffany (0.1.3)
       nenv (~> 0.1)
       shellany (~> 0.0)
+    openssl (3.1.0)
     parallel (1.23.0)
     parser (3.2.2.3)
       ast (~> 2.4.1)
@@ -264,6 +265,7 @@ DEPENDENCIES
   hanami-rspec
   hanami-validations (~> 2.0)
   mongo (~> 2.1)
+  openssl (~> 3.1)
   pg
   puma
   rack-test
