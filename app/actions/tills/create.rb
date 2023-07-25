@@ -4,7 +4,7 @@ module Wapay
   module Actions
     module Tills
       class Create < Wapay::Action
-        include Deps['dashboard']
+        include Deps['tills_dashboard']
 
         params do
           required(:name).filled(:string)
@@ -18,7 +18,7 @@ module Wapay
             till = request.params[:till]
             phone = request.params[:phone]
 
-            dashboard.create_till(name, till, phone)
+            tills_dashboard.create_till(name, till, phone)
 
             response.status = 201
             response.body = { message: 'till created' }.to_json

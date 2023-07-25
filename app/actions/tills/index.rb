@@ -4,10 +4,10 @@ module Wapay
   module Actions
     module Tills
       class Index < Wapay::Action
-        include Deps['dashboard']
+        include Deps['tills_dashboard']
 
         def handle(*, response)
-          response.body = dashboard.all_tills
+          response.body = tills_dashboard.all_tills
         end
       end
     end

@@ -17,6 +17,15 @@ module Wapay
       )
     end
 
+    def self.all_tills
+      tills = []
+      collection.find.each do |document|
+        tills.append(document.to_json)
+      end
+
+      tills
+    end
+
     def self.till_data(till_number)
       doc = collection.find({ till: till_number }).first.to_json
       JSON.parse(doc, object_class: OpenStruct)

@@ -4,7 +4,7 @@ module Wapay
   module Actions
     module Users
       class Create < Wapay::Action
-        include Deps['dashboard']
+        include Deps['users_dashboard']
 
         params do
           required(:name).filled(:string)
@@ -18,7 +18,7 @@ module Wapay
             id_number = request.params[:id_number]
             phone = request.params[:phone]
 
-            dashboard.create_user(name, phone, id_number)
+            users_dashboard.create_user(name, phone, id_number)
 
             response.status = 201
             response.body = { message: 'user created' }.to_json

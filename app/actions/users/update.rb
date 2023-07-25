@@ -4,7 +4,7 @@ module Wapay
   module Actions
     module Users
       class Update < Wapay::Action
-        include Deps['dashboard']
+        include Deps['users_dashboard']
 
         params do
           optional(:name).filled(:string)
