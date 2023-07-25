@@ -4,13 +4,13 @@ require 'mongo'
 
 module Wapay
   class Transaction
-    def self.log_transaction(party_a, party_b, transaction_type, amount)
+    def self.log_transaction(party_a, party_b, transaction_type, amount, code)
       doc = {
         party_a:,
         party_b:,
         transaction_type:,
         amount:,
-        code: "LYD#{Time.now.strftime('%y%m%d%H%M%S%L')}",
+        code:,
         completed_at: Time.now
       }
 

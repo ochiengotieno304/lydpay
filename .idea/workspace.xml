@@ -7,14 +7,7 @@
     <list default="true" id="4cf1ba31-1c7d-45e2-84f3-89afa6623a58" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/actions/webhook/wandler.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/wandler.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/providers/sessions.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/providers/sessions.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/routes.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/routes.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/payments.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/payments.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/wapay/transaction.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/transaction.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/user.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/user.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spec/actions/sessions/index_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/actions/sessions/index_spec.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spec/actions/tills/create_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/actions/tills/create_spec.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spec/actions/transactions/index_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/actions/transactions/index_spec.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -230,7 +223,7 @@
       <workItem from="1690285401082" duration="976000" />
       <workItem from="1690286673490" duration="1656000" />
       <workItem from="1690291088969" duration="6610000" />
-      <workItem from="1690316102591" duration="2434000" />
+      <workItem from="1690316102591" duration="3507000" />
     </task>
     <servers />
   </component>
