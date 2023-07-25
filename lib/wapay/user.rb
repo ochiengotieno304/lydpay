@@ -40,7 +40,7 @@ module Wapay
         users.append(document.to_json)
       end
 
-      return users
+      users
     end
 
     def self.init_collection

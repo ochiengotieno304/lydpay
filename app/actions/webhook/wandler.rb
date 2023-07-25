@@ -10,7 +10,7 @@ module Wapay
 
         def handle_interactive_message(user_id, request_body)
           button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-            request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -102,9 +102,10 @@ module Wapay
                 transaction_code = MPesa.b_2_c(bill_amount, bill_account).ResponseCode
 
                 if transaction_code == '0'
-                  Requests.send_text_message(user_id, "Processing payment, we'll send confirmation message when complete")
+                  Requests.send_text_message(user_id,
+                                             "Processing payment, we'll send confirmation message when complete")
                 else
-                  Requests.send_text_message(user_id, "Payment request failed")
+                  Requests.send_text_message(user_id, 'Payment request failed')
                 end
 
               else
@@ -348,7 +349,7 @@ module Wapay
 
         def handle_unregistered_user_interactive_message(user_id, request_body)
           button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-            request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -409,8 +410,8 @@ module Wapay
           body = JSON.parse(request_body, object_class: OpenStruct)
 
           if body.object && body.entry && body.entry[0].changes &&
-            body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
-            body.entry[0].changes[0].value.messages[0]
+             body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
+             body.entry[0].changes[0].value.messages[0]
             message_type = body.entry[0].changes[0].value.messages[0].type
 
             user_phone = body.entry[0].changes[0].value.messages[0].from

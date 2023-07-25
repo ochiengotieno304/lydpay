@@ -15,11 +15,10 @@ module Wapay
         'message' => message
       }
 
-      response = connection.post('/version1/messaging') do |req|
+      connection.post('/version1/messaging') do |req|
         req.headers['apiKey'] = @api_key
         req.body = data
       end
-
     end
 
     def self.inti_connection

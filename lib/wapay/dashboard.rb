@@ -13,7 +13,7 @@ module Wapay
         created_at: Time.now
       }
 
-      collection.insert_one(doc)
+      collection('users', 'UsersDB').insert_one(doc)
     end
 
     def self.user_data(user_id)
@@ -22,7 +22,7 @@ module Wapay
     end
 
     def self.update_user(user_id, update_data)
-      collection.update_one(
+      collection('users', 'UsersDB').update_one(
         { 'phone' => user_id },
         { '$set' => update_data }
       )
@@ -30,17 +30,38 @@ module Wapay
 
     def self.all_users
       users = []
-      collection.find.each do |document|
+      collection('users', 'UsersDB').find.each do |document|
         users.append(document.to_json)
       end
 
-      return users
+      users
     end
 
-    def self.init_collection
-      client = Mongo::Client.new(ENV['MONGO_URI'], database: 'UsersDB')
+    def self.all_tills
+      tills = []
+      collection('tills', 'BusinessDB').find.each do |document|
+        tills.append(document.to_json)
+      end
+
+      tills
+    end
+
+    def self.create_till(name, till, phone)
+      doc = {
+        name:,
+        till:,
+        phone:,
+        balance: 0,
+        created_at: Time.now
+      }
+
+      collection('tills', 'BusinessDB').insert_one(doc)
+    end
+
+    def self.init_collection(collection, database)
+      client = Mongo::Client.new(ENV['MONGO_URI'], database:)
       begin
-        @collection = client[:users]
+        @collection = client[collection]
       rescue Mongo::Error::OperationFailure => e
         puts e
       ensure
@@ -48,8 +69,8 @@ module Wapay
       end
     end
 
-    private_class_method def self.collection
-      @collection ||= init_collection
+    private_class_method def self.collection(collection, database)
+      @collection ||= init_collection(collection, database)
     end
   end
 end

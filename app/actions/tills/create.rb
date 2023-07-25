@@ -2,26 +2,26 @@
 
 module Wapay
   module Actions
-    module Users
+    module Tills
       class Create < Wapay::Action
         include Deps['dashboard']
 
         params do
           required(:name).filled(:string)
-          required(:id_number).filled(:string)
+          required(:till).filled(:string)
           required(:phone).filled(:string)
         end
 
         def handle(request, response)
           if request.params.valid?
             name = request.params[:name]
-            id_number = request.params[:id_number]
+            till = request.params[:till]
             phone = request.params[:phone]
 
-            dashboard.create_user(name, phone, id_number)
+            dashboard.create_till(name, till, phone)
 
             response.status = 201
-            response.body = { message: 'user created' }.to_json
+            response.body = { message: 'till created' }.to_json
           else
             response.status = 422
             response.format = :json

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Wapay::Actions::Users::Update do
+RSpec.describe Wapay::Actions::Tills::Index do
   let(:params) { Hash[] }
 
   it 'works' do

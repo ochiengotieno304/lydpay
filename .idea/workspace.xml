@@ -5,16 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4cf1ba31-1c7d-45e2-84f3-89afa6623a58" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/wapay.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/wapay.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Gemfile" beforeDir="false" afterPath="$PROJECT_DIR$/Gemfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Gemfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Gemfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SandboxCertificate.cer" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/actions/users/create.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/users/create.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/actions/users/update.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/users/update.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/actions/webhook/wandler.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/webhook/wandler.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/app.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/providers/dashboard.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/providers/dashboard.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/routes.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/routes.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/persistence/relations/users.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/persistence/relations/dashboard.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/wapay/dashboard.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/dashboard.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/wapay/sms.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/sms.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/wapay/user.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/user.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spec/actions/users/index_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/actions/users/index_spec.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spec/actions/users/update_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/spec/actions/users/update_spec.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,34 +51,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultRubyCreateTestTemplate&quot;: &quot;RSpec&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/ochi/RubymineProjects/LydPay&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ruby.rails.projectView.checked&quot;: &quot;true&quot;,
-    &quot;ruby.structure.view.model.defaults.configured&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "DefaultRubyCreateTestTemplate": "RSpec",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/ochi/RubymineProjects/LydPay",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "ruby.rails.projectView.checked": "true",
+    "ruby.structure.view.model.defaults.configured": "true",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mongo&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mongo"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/wapay" />
+      <recent name="$PROJECT_DIR$/lib/wapay/persistence" />
     </key>
   </component>
   <component name="RunManager" selected="Rails.wapay">
@@ -215,7 +222,10 @@
       <workItem from="1690191717026" duration="4729000" />
       <workItem from="1690197345390" duration="4231000" />
       <workItem from="1690202433308" duration="203000" />
-      <workItem from="1690214048806" duration="957000" />
+      <workItem from="1690214048806" duration="7138000" />
+      <workItem from="1690228898147" duration="5000" />
+      <workItem from="1690276083254" duration="1120000" />
+      <workItem from="1690281392753" duration="2302000" />
     </task>
     <servers />
   </component>
