@@ -14,7 +14,7 @@ module Wapay
     post '/webhook/mpesa/b2c/queue', as: :b2c_queue, to: ->(_env) { [202, {}, ['']] }
     get '/tills', to: 'tills.index'
     post '/tills', to: 'tills.create'
-    get "/sessions", to: "sessions.index"
-    get "/transactions", to: "transactions.index"
+    get '/sessions', to: 'sessions.index'
+    get '/transactions', to: 'transactions.index'
   end
 end

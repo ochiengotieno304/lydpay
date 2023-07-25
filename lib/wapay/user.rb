@@ -16,14 +16,14 @@ module Wapay
       collection.insert_one(doc)
     end
 
-    def self.user_data(user_id)
-      doc = collection.find({ phone: user_id }).first.to_json
+    def self.user_data(phone)
+      doc = collection.find({ phone: }).first.to_json
       JSON.parse(doc, object_class: OpenStruct)
     end
 
-    def self.update_user(user_id, update_data)
+    def self.update_user(phone, update_data)
       collection.update_one(
-        { 'phone' => user_id },
+        { 'phone' => phone },
         { '$set' => update_data }
       )
     end

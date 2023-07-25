@@ -10,4 +10,3 @@ Hanami.app.register_provider(:sessions_dashboard) do
     register 'sessions_dashboard', dashboard
   end
 end
-

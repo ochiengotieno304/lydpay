@@ -9,8 +9,7 @@ module Wapay
         private
 
         def handle_interactive_message(user_id, request_body)
-          button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+          button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id || request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -40,8 +39,7 @@ module Wapay
             Session.create_session(user_id, 'payments', 'wallet-top-up')
             Requests.send_text_message(user_id, 'M-Pesa phone number to top up from')
           when 'account-balance'
-            Requests.send_text_message(user_id,
-                                       "Your balance on #{@@time} was KES #{User.user_data(user_id).balance}")
+            Requests.send_text_message(user_id, "Your balance on #{@@time} was KES #{User.user_data(user_id).balance}")
           when 'confirm-transaction'
             if session
               transfer_type = session.transferType
@@ -73,19 +71,24 @@ module Wapay
                                      'checkoutRequestId' => checkout_request_id }
                 Session.update_sessions(user_id, transaction_data)
               when 'wallet-to-wallet'
-                if Payments.send_to_wallet(user_id, bill_account, bill_amount)
-                  if bill_account.start_with?('0') && (bill_account.size == 10)
-                    bill_account = bill_account[1..].rjust(12, '254')
-                  end
-                  message = "Successfully sent KES #{bill_amount} to #{User.user_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}"
+                transaction_code = Payments.send_to_wallet(user_id, bill_account, bill_amount)
+                case transaction_code
+                when 'ACC01'
+                  b_acc = bill_account[1..].rjust(12, '254')
+                  message = "Successfully sent KES #{bill_amount} to #{User.user_data(b_acc).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}"
+                  Transaction.log_transaction(user_id, bill_account, transfer_type, bill_amount)
                   Requests.send_text_message(user_id, message)
                   Sms.send_sms(user_id, message)
-                  Transaction.log_transaction(user_id, bill_account, transfer_type, bill_amount)
-                  Requests.send_text_message(bill_account,
-                                             "Received KES #{bill_amount} from #{User.user_data(user_id).name} on #{@@time}. New wallet balance was KES #{User.user_data(bill_account).balance} ")
-                else
-                  Requests.send_text_message(user_id,
-                                             "Unable to complete KES #{bill_amount} transfer to #{bill_account}")
+                when 'ERR01'
+                  message = 'Transaction failed, insufficient wallet funds'
+                  # Transaction.log_transaction(user_id, bill_account, transfer_type, bill_amount)
+                  Requests.send_text_message(user_id, message)
+                  Sms.send_sms(user_id, message)
+                when 'ERR02'
+                  message = "Transaction failed, could not find receiving party #{bill_account}"
+                  # Transaction.log_transaction(user_id, bill_account, transfer_type, bill_amount)
+                  Requests.send_text_message(user_id, message)
+                  Sms.send_sms(user_id, message)
                 end
               when 'wallet-to-till'
                 transaction_code = Payments.send_to_till(user_id, bill_account, bill_amount)
@@ -98,8 +101,7 @@ module Wapay
                   Requests.send_text_message(user_id,
                                              "Unable to complete KES #{bill_amount} transfer to #{bill_account}, insufficient funds")
                 when 'ERR02'
-                  Requests.send_text_message(user_id,
-                                             "Unable to complete transaction, #{bill_account} unavailable")
+                  Requests.send_text_message(user_id, "Unable to complete transaction, #{bill_account} unavailable")
                 end
               when 'wallet-to-mpesa'
                 transaction_code = MPesa.b_2_c(bill_amount, bill_account).ResponseCode
@@ -148,14 +150,13 @@ module Wapay
             bill_amount = message
             Session.update_sessions(user_phone, { amount: bill_amount })
             if recipient_account.start_with?('0') && (recipient_account.size == 10)
-              recipient_account = recipient_account[1..].rjust(12,
-                                                               '254')
+              recipient_account = recipient_account[1..].rjust(12, '254')
             end
-            Requests.send_button_message(user_phone, "#{User.user_data(recipient_account).name} will receive KES #{bill_amount}",
-                                         @@confirmation_buttons)
+            Requests.send_button_message(user_phone,
+                                         "#{User.user_data(recipient_account).name} will receive KES #{bill_amount}", @@confirmation_buttons)
           else
-            Requests.send_button_message(user_phone, "Pending transaction\nLyd-Pay wallet #{recipient_account} will receive KES #{amount}",
-                                         @@confirmation_buttons)
+            Requests.send_button_message(user_phone,
+                                         "Pending transaction\nLyd-Pay wallet #{recipient_account} will receive KES #{amount}", @@confirmation_buttons)
           end
         end
 
@@ -170,11 +171,11 @@ module Wapay
           elsif amount.nil?
             bill_amount = message
             Session.update_sessions(user_phone, { amount: bill_amount })
-            Requests.send_button_message(user_phone, "M-Pesa account #{recipient_account} will receive KES #{bill_amount}",
-                                         @@confirmation_buttons)
+            Requests.send_button_message(user_phone,
+                                         "M-Pesa account #{recipient_account} will receive KES #{bill_amount}", @@confirmation_buttons)
           else
-            Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} transfer to M-Pesa account #{recipient_account}",
-                                         @@confirmation_buttons)
+            Requests.send_button_message(user_phone,
+                                         "Pending transaction\nConfirm KES #{amount} transfer to M-Pesa account #{recipient_account}", @@confirmation_buttons)
           end
         end
 
@@ -189,11 +190,11 @@ module Wapay
           elsif amount.nil?
             bill_amount = message
             Session.update_sessions(user_phone, { amount: bill_amount })
-            Requests.send_button_message(user_phone, "Bank account #{recipient_account} will receive KES #{bill_amount}",
-                                         @@confirmation_buttons)
+            Requests.send_button_message(user_phone,
+                                         "Bank account #{recipient_account} will receive KES #{bill_amount}", @@confirmation_buttons)
           else
-            Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} transfer to M-Pesa account #{recipient_account}",
-                                         @@confirmation_buttons)
+            Requests.send_button_message(user_phone,
+                                         "Pending transaction\nConfirm KES #{amount} transfer to M-Pesa account #{recipient_account}", @@confirmation_buttons)
           end
         end
 
@@ -211,8 +212,8 @@ module Wapay
             Requests.send_button_message(user_phone, "Till #{Till.till_data(recipient_account).name} will receive KES #{bill_amount}", # TODO: replace till with business name
                                          @@confirmation_buttons)
           else
-            Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} transfer to till #{recipient_account}",
-                                         @@confirmation_buttons)
+            Requests.send_button_message(user_phone,
+                                         "Pending transaction\nConfirm KES #{amount} transfer to till #{recipient_account}", @@confirmation_buttons)
           end
         end
 
@@ -244,8 +245,8 @@ module Wapay
             Requests.send_button_message(user_phone, "Mpesa #{recipient_account} will be charged KES #{bill_amount}",
                                          @@confirmation_buttons)
           else
-            Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} Mpesa charge#{recipient_account}",
-                                         @@confirmation_buttons)
+            Requests.send_button_message(user_phone,
+                                         "Pending transaction\nConfirm KES #{amount} Mpesa charge#{recipient_account}", @@confirmation_buttons)
           end
         end
 
@@ -286,22 +287,8 @@ module Wapay
         end
 
         def handle_unregistered_user_text_message(session, request_body = nil)
-          reg_confirm_buttons = [
-            {
-              type: 'reply',
-              reply: {
-                id: 'confirm-details',
-                title: 'Confirm'
-              }
-            },
-            {
-              type: 'reply',
-              reply: {
-                id: 'cancel-registration',
-                title: 'Cancel'
-              }
-            }
-          ]
+          reg_confirm_buttons = [{ type: 'reply', reply: { id: 'confirm-details', title: 'Confirm' } },
+                                 { type: 'reply', reply: { id: 'cancel-registration', title: 'Cancel' } }]
           message = request_body.entry[0].changes[0].value.messages[0].text.body
           user_phone = request_body.entry[0].changes[0].value.messages[0].from
           profile_name = request_body.entry[0].changes[0].value.contacts[0].profile.name
@@ -322,37 +309,15 @@ module Wapay
               end
             end
           else
-            registration_buttons = [
-              {
-                type: 'reply',
-                reply: {
-                  id: 'sign-up',
-                  title: 'Sign Up'
-                }
-              },
-              {
-                type: 'reply',
-                reply: {
-                  id: 'info-desk',
-                  title: 'Info desk'
-                }
-              },
-              {
-                type: 'reply',
-                reply: {
-                  id: 'more-info',
-                  title: 'More info'
-                }
-              }
-            ]
+            registration_buttons = [{ type: 'reply', reply: { id: 'sign-up', title: 'Sign Up' } },
+                                    { type: 'reply', reply: { id: 'info-desk', title: 'Info desk' } }, { type: 'reply', reply: { id: 'more-info', title: 'More info' } }]
 
             Requests.send_button_message(user_phone, "#{greeting}#{profile_name}", registration_buttons)
           end
         end
 
         def handle_unregistered_user_interactive_message(user_id, request_body)
-          button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id ||
-                      request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
+          button_id = request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.button_reply&.id || request_body.entry[0]&.changes&.[](0)&.value&.messages&.[](0)&.interactive&.list_reply&.id
 
           session = Session.find_session(user_id)
 
@@ -386,22 +351,8 @@ module Wapay
           end
         end
 
-        @@confirmation_buttons = [
-          {
-            type: 'reply',
-            reply: {
-              id: 'confirm-transaction',
-              title: 'Confirm'
-            }
-          },
-          {
-            type: 'reply',
-            reply: {
-              id: 'cancel-transaction',
-              title: 'Cancel'
-            }
-          }
-        ]
+        @@confirmation_buttons = [{ type: 'reply', reply: { id: 'confirm-transaction', title: 'Confirm' } },
+                                  { type: 'reply', reply: { id: 'cancel-transaction', title: 'Cancel' } }]
 
         @@time = Time.now.strftime('%d/%m/%Y, %I:%M %p')
 
@@ -412,9 +363,7 @@ module Wapay
 
           body = JSON.parse(request_body, object_class: OpenStruct)
 
-          if body.object && body.entry && body.entry[0].changes &&
-             body.entry[0].changes[0] && body.entry[0].changes[0].value.messages &&
-             body.entry[0].changes[0].value.messages[0]
+          if body.object && body.entry && body.entry[0].changes && body.entry[0].changes[0] && body.entry[0].changes[0].value.messages && body.entry[0].changes[0].value.messages[0]
             message_type = body.entry[0].changes[0].value.messages[0].type
 
             user_phone = body.entry[0].changes[0].value.messages[0].from

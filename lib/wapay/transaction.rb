@@ -10,7 +10,7 @@ module Wapay
         party_b:,
         transaction_type:,
         amount:,
-        code: 'LYD' + Time.now.strftime('%y%m%d%H%M%S%L'),
+        code: "LYD#{Time.now.strftime('%y%m%d%H%M%S%L')}",
         completed_at: Time.now
       }
 

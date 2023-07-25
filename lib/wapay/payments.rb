@@ -26,12 +26,20 @@ module Wapay
     def self.send_to_wallet(from_user_id, to_user_id, amount)
       from_account_balance = User.user_data(from_user_id).balance
       to_user_id = to_user_id[1..].rjust(12, '254') if to_user_id.start_with?('0') && (to_user_id.size == 10)
-      to_account_balance = User.user_data(to_user_id).balance
 
-      return unless from_account_balance.positive? && from_account_balance > amount.to_i
-
-      User.update_user(from_user_id, { 'balance' => from_account_balance - amount.to_i })
-      User.update_user(to_user_id, { 'balance' => to_account_balance + amount.to_i })
+      recipient_available = User.available?(to_user_id)
+      if recipient_available
+        to_account_balance = User.user_data(to_user_id).balance
+        if from_account_balance > amount.to_i
+          User.update_user(from_user_id, { 'balance' => from_account_balance - amount.to_i })
+          User.update_user(to_user_id, { 'balance' => to_account_balance + amount.to_i })
+          'ACC01' # successful transfer
+        else
+          'ERR01' # insufficient funds
+        end
+      else
+        'ERR02' # recipient unavailable
+      end
     end
 
     def self.send_to_till(from_user_id, till_number, amount)
@@ -46,7 +54,7 @@ module Wapay
           Till.update_till(till_number, { 'balance' => till_balance + amount.to_i })
           'ACC01'
         else
-          'ERR01'
+          'ERR01' # insufficient funds
         end
       else
         'ERR02'
