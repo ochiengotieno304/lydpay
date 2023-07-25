@@ -67,6 +67,15 @@ module Wapay
       JSON.parse(doc, object_class: OpenStruct)
     end
 
+    def self.all_sessions
+      sessions = []
+      collection.find.each do |document|
+        sessions.append(document.to_json)
+      end
+
+      sessions
+    end
+
     def self.init_collection
       client = Mongo::Client.new(ENV['MONGO_URI'], database: 'SessionsDB')
       begin

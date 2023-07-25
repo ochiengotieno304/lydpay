@@ -6,14 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="4cf1ba31-1c7d-45e2-84f3-89afa6623a58" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/actions/tills/create.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/tills/create.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/actions/tills/index.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/tills/index.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/actions/users/create.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/users/create.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/actions/users/index.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/users/index.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/actions/users/update.rb" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions/users/update.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/providers/dashboard.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/providers/users.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/dashboard.rb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wapay/till.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/till.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/routes.rb" beforeDir="false" afterPath="$PROJECT_DIR$/config/routes.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/wapay/session.rb" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wapay/session.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,10 +33,10 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": -1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: -1
+}</component>
   <component name="ProjectId" id="2S3XwOTGJaSbmGgMFoedIOLp7nU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -224,7 +218,8 @@
       <workItem from="1690276083254" duration="1120000" />
       <workItem from="1690281392753" duration="4006000" />
       <workItem from="1690285401082" duration="976000" />
-      <workItem from="1690286673490" duration="1108000" />
+      <workItem from="1690286673490" duration="1656000" />
+      <workItem from="1690291088969" duration="1813000" />
     </task>
     <servers />
   </component>
