@@ -53,6 +53,7 @@ module Wapay
                 transaction_code = AirtimeAndData.send_airtime(user_id, bill_amount)
                 case transaction_code
                 when 'ACC01'
+                  Transaction.log_transaction(user_id, bill_account, transfer_type, bill_amount)
                   Requests.send_text_message(user_id,
                                              "Airtime top up worth KES #{bill_amount} on #{@@time} successful. New wallet balance KES #{User.user_data(user_id).balance}")
                 when 'ERR01'
@@ -79,6 +80,7 @@ module Wapay
                   message = "Successfully sent KES #{bill_amount} to #{User.user_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}"
                   Requests.send_text_message(user_id, message)
                   Sms.send_sms(user_id, message)
+                  Transaction.log_transaction(user_id, bill_account, transfer_type, bill_amount)
                   Requests.send_text_message(bill_account,
                                              "Received KES #{bill_amount} from #{User.user_data(user_id).name} on #{@@time}. New wallet balance was KES #{User.user_data(bill_account).balance} ")
                 else
@@ -89,6 +91,7 @@ module Wapay
                 transaction_code = Payments.send_to_till(user_id, bill_account, bill_amount)
                 case transaction_code
                 when 'ACC01'
+                  Transaction.log_transaction(user_id, bill_account, transfer_type, bill_amount)
                   Requests.send_text_message(user_id,
                                              "Successfully sent KES #{bill_amount} to #{Till.till_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance}")
                 when 'ERR01'

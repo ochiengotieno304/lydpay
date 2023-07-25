@@ -15,5 +15,6 @@ module Wapay
     get '/tills', to: 'tills.index'
     post '/tills', to: 'tills.create'
     get "/sessions", to: "sessions.index"
+    get "/transactions", to: "transactions.index"
   end
 end
