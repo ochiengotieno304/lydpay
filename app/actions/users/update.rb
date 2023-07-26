@@ -19,6 +19,8 @@ module Wapay
           request.params[:phone] || nil
           request.params[:balance] || nil
 
+          puts request.params
+
           response.body = self.class.name
         end
       end

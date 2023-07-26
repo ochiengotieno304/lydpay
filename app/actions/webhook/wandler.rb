@@ -39,6 +39,7 @@ module Wapay
             Session.create_session(user_id, 'payments', 'wallet-top-up')
             Requests.send_text_message(user_id, 'M-Pesa phone number to top up from')
           when 'account-balance'
+            Session.delete_session(user_id) if session
             Transaction.log_transaction(user_id, 'self', 'balance', 'self', @@transaction_id)
             Requests.send_text_message(user_id,
                                        "Your balance on #{@@time} was KES #{User.user_data(user_id).balance} - #{@@transaction_id}")
