@@ -14,14 +14,25 @@ module Wapay
         end
 
         def handle(request, response)
-          request.params[:name] || nil
-          request.params[:id_number] || nil
-          request.params[:phone] || nil
-          request.params[:balance] || nil
+          http_method = request.request_method
+          path_info = request.path_info
 
-          puts request.params
+          if http_method == 'PATCH' && path_info.match(%r{^/users/(\d+)$})
+            id = ::Regexp.last_match(1)
+            request_data = request.params
+            hash = {}
 
-          response.body = self.class.name
+            request_data.each { |key, value| hash[key] = value }
+            result = users_dashboard.update_user(id, hash)
+
+            if result.modified_count.to_i.positive?
+              response.body = { message: 'user updated' }.to_json
+              response.status = 200
+            end
+          else
+            response.body = { error: 'user not update' }.to_json
+            response.status = 200
+          end
         end
       end
     end
