@@ -63,6 +63,7 @@ module Wapay
                                              'Unable to complete transaction, please try again later or contact customer care')
                   Requests.send_contact_message(user_id)
                 end
+                Session.delete_session(user_id)
               when 'wallet-top-up'
                 Requests.send_text_message(user_id, 'Confirm your pin on the Mpesa prompt')
                 mpesa_response = MPesa.stk_push(bill_account, bill_amount)
@@ -94,6 +95,7 @@ module Wapay
                   Requests.send_text_message(user_id, message)
                   Sms.send_sms(user_id, message)
                 end
+                Session.delete_session(user_id)
               when 'wallet-to-till'
                 transaction_code = Payments.send_to_till(user_id, bill_account, bill_amount)
                 case transaction_code
@@ -107,6 +109,7 @@ module Wapay
                 when 'ERR02'
                   Requests.send_text_message(user_id, "Unable to complete transaction, #{bill_account} unavailable")
                 end
+                Session.delete_session(user_id)
               when 'wallet-to-mpesa'
                 transaction_code = MPesa.b_2_c(bill_amount, bill_account).ResponseCode
 
@@ -116,12 +119,13 @@ module Wapay
                 else
                   Requests.send_text_message(user_id, 'Payment request failed')
                 end
-
+                Session.delete_session(user_id)
               else
                 Requests.send_text_message(user_id,
                                            "Successfully sent KES #{session.amount} to #{session.recipientAccount}")
+                Session.delete_session(user_id)
+
               end
-              Session.delete_session(user_id)
             else
               Requests.send_text_message(user_id, 'No pending transactions to confirm')
               Requests.send_list_message(user_id, 'Hello, make payments with ease')
@@ -262,7 +266,7 @@ module Wapay
           if message.downcase == 'balance'
             Transaction.log_transaction(user_phone, 'self', 'balance', 'self', @@transaction_id)
             Requests.send_text_message(user_phone,
-                                       "Your balance on #{@@time} was KES #{User.user_data(user_phone).balance}")
+                                       "Your balance on #{@@time} was KES #{User.user_data(user_phone).balance} - #{@@transaction_id}")
           end
 
           if session
