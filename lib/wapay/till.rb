@@ -10,6 +10,19 @@ module Wapay
       false
     end
 
+    def self.create_till(name, till, phone )
+      doc = {
+        name:,
+        till:,
+        phone:,
+        balance: 0,
+        created_at: Time.now
+      }
+
+      collection.insert_one(doc)
+    end
+
+
     def self.update_till(till_number, update_data)
       collection.update_one(
         { 'till' => till_number },
