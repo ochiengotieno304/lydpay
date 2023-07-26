@@ -7,6 +7,7 @@ module Wapay
     module Webhook
       class Mpesa < Wapay::Action
         @@transaction_id = "LYD#{Time.now.strftime('%y%m%d%H%M%S%L')}"
+        @@time = Time.now.strftime('%d/%m/%Y, %I:%M %p')
 
         def handle(request, response)
           request_body = request.body.read
@@ -28,7 +29,7 @@ module Wapay
               Transaction.log_transaction("M-#{billed_account}", user_id, 'wallet-top-up', top_up_amount,
                                           @@transaction_id)
               Requests.send_text_message(user_id,
-                                         "Top up of KES #{top_up_amount} successful new wallet balance #{user_balance + top_up_amount} - #{@@transaction_id}")
+                                         "Top up of KES #{top_up_amount} on #{@@time} was successful new wallet balance KES #{user_balance + top_up_amount} - #{@@transaction_id}")
             elsif result_code == 1032
               Requests.send_text_message(user_id, 'Top up canceled user')
             else
