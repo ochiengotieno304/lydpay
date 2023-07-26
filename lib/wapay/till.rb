@@ -10,7 +10,7 @@ module Wapay
       false
     end
 
-    def self.create_till(name, till, phone )
+    def self.create_till(name, till, phone)
       doc = {
         name:,
         till:,
@@ -21,7 +21,6 @@ module Wapay
 
       collection.insert_one(doc)
     end
-
 
     def self.update_till(till_number, update_data)
       collection.update_one(

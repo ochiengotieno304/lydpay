@@ -40,7 +40,8 @@ module Wapay
             Requests.send_text_message(user_id, 'M-Pesa phone number to top up from')
           when 'account-balance'
             Transaction.log_transaction(user_id, 'self', 'balance', 'self', @@transaction_id)
-            Requests.send_text_message(user_id, "Your balance on #{@@time} was KES #{User.user_data(user_id).balance} - #{@@transaction_id}")
+            Requests.send_text_message(user_id,
+                                       "Your balance on #{@@time} was KES #{User.user_data(user_id).balance} - #{@@transaction_id}")
           when 'confirm-transaction'
             if session
               transfer_type = session.transferType

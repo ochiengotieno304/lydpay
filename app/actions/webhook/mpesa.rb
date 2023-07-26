@@ -6,7 +6,6 @@ module Wapay
   module Actions
     module Webhook
       class Mpesa < Wapay::Action
-
         @@transaction_id = "LYD#{Time.now.strftime('%y%m%d%H%M%S%L')}"
 
         def handle(request, response)
@@ -26,14 +25,16 @@ module Wapay
             if result_code.zero?
               top_up_amount = body.Body.stkCallback.CallbackMetadata.Item[0].Value.to_i
               User.update_user(user_id, { 'balance' => user_balance + top_up_amount })
-              Transaction.log_transaction("M-#{billed_account}", user_id, 'wallet-top-up', top_up_amount, @@transaction_id )
+              Transaction.log_transaction("M-#{billed_account}", user_id, 'wallet-top-up', top_up_amount,
+                                          @@transaction_id)
               Requests.send_text_message(user_id,
                                          "Top up of KES #{top_up_amount} successful new wallet balance #{user_balance + top_up_amount} - #{@@transaction_id}")
-              Session.delete_session(user_id)
             elsif result_code == 1032
+              Requests.send_text_message(user_id, 'Top up canceled user')
+            else
               Requests.send_text_message(user_id, 'Top up failed')
-              Session.delete_session(user_id)
             end
+            Session.delete_session(user_id)
           end
 
           response.status = 202
@@ -42,4 +43,3 @@ module Wapay
     end
   end
 end
-

@@ -14,10 +14,10 @@ module Wapay
         end
 
         def handle(request, response)
-          name = request.params[:name] || nil
-          id_number = request.params[:id_number] || nil
-          phone = request.params[:phone] || nil
-          balance = request.params[:balance] || nil
+          request.params[:name] || nil
+          request.params[:id_number] || nil
+          request.params[:phone] || nil
+          request.params[:balance] || nil
 
           response.body = self.class.name
         end
