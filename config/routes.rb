@@ -9,7 +9,8 @@ module Wapay
     post '/users', to: 'users.create'
     get '/sessions/test', to: 'sessions.test'
     get '/users', to: 'users.index'
-    patch '/users/:id', to: 'users.update'
+    # patch '/users/:id', to: 'users.update'
+    patch '/users/:id', to: ->(_env) { [202, {}, ['']] }
     post '/webhook/mpesa/b2c', as: :b2c, to: ->(_env) { [202, {}, ['']] }
     post '/webhook/mpesa/b2c/queue', as: :b2c_queue, to: ->(_env) { [202, {}, ['']] }
     get '/tills', to: 'tills.index'

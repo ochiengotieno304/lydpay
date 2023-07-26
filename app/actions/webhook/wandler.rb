@@ -260,6 +260,7 @@ module Wapay
           profile_name = request_body.entry[0].changes[0].value.contacts[0].profile.name
 
           if message.downcase == 'balance'
+            Transaction.log_transaction(user_phone, 'self', 'balance', 'self', @@transaction_id)
             Requests.send_text_message(user_phone,
                                        "Your balance on #{@@time} was KES #{User.user_data(user_phone).balance}")
           end
