@@ -10,7 +10,7 @@ module Wapay
     @endpoint = ENV['AT_ENDPOINT']
 
     def self.send_airtime(recipient, amount)
-      from_account_balance = User.user_data(recipient).balance
+      from_account_balance = User.user_data(recipient).balance.to_i
 
       if from_account_balance > amount.to_i
         int_recipient = recipient[1..].rjust(13, '+254')

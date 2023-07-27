@@ -340,6 +340,7 @@ module Wapay
           when 'confirm-details'
             User.create_user(session.name, user_id, session.idNumber)
             Requests.send_text_message(user_id, 'Registration successful')
+            Requests.send_list_message(user_id, "Hi! Welcome to LydPay")
             Session.delete_session(user_id)
           when 'cancel-registration'
             Requests.send_text_message(user_id, 'Registration cancelled')
