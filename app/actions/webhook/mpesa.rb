@@ -28,10 +28,11 @@ module Wapay
               User.update_user(user_id, { 'balance' => user_balance + top_up_amount })
               Transaction.log_transaction("M-#{billed_account}", user_id, 'wallet-top-up', top_up_amount,
                                           @@transaction_id)
-              Requests.send_text_message(user_id,
-                                         "Top up of KES #{top_up_amount} on #{@@time} was successful new wallet balance KES #{user_balance + top_up_amount} - #{@@transaction_id}")
+              message = "Top up of KES #{top_up_amount} on #{@@time} was successful new wallet balance KES #{user_balance + top_up_amount}"
+              Requests.send_text_message(user_id, message + " - #{@@transaction_id}")
+              Sms.send_sms(user_id, message)
             elsif result_code == 1032
-              Requests.send_text_message(user_id, 'Top up canceled user')
+              Requests.send_text_message(user_id, 'Top up canceled by user')
             else
               Requests.send_text_message(user_id, 'Top up failed')
             end

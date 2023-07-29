@@ -28,6 +28,13 @@ module Wapay
       )
     end
 
+    def self.update_user_by_id(id, update_data)
+      collection.update_one(
+        { '_id' => BSON::ObjectId(id) },
+        { '$set' => update_data }
+      )
+    end
+
     def self.available?(phone)
       return true if collection.find({ phone: }).first
 

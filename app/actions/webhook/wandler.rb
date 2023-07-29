@@ -55,8 +55,10 @@ module Wapay
                 case transaction_code
                 when 'ACC01'
                   Transaction.log_transaction(user_id, bill_account, transfer_type, bill_amount, @@transaction_id)
+                  message = "Airtime top up worth KES #{bill_amount} on #{@@time} successful. New wallet balance KES #{User.user_data(user_id).balance} - #{@@transaction_id}"
                   Requests.send_text_message(user_id,
-                                             "Airtime top up worth KES #{bill_amount} on #{@@time} successful. New wallet balance KES #{User.user_data(user_id).balance} - #{@@transaction_id}")
+                                             message)
+                  Sms.send_sms(user_id, message)
                 when 'ERR01'
                   Requests.send_text_message(user_id,
                                              "Unable to complete KES #{bill_amount} airtime top up, insufficient funds")
@@ -102,9 +104,13 @@ module Wapay
                 transaction_code = Payments.send_to_till(user_id, bill_account, bill_amount)
                 case transaction_code
                 when 'ACC01'
+                  message = "Successfully sent KES #{bill_amount} to #{Till.till_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance} - #{@@transaction_id}"
                   Transaction.log_transaction(user_id, bill_account, transfer_type, bill_amount, @@transaction_id)
-                  Requests.send_text_message(user_id,
-                                             "Successfully sent KES #{bill_amount} to #{Till.till_data(bill_account).name} on #{@@time}. New wallet balance KES #{User.user_data(user_id).balance} - #{@@transaction_id}")
+                  Requests.send_text_message(user_id, message)
+                  Sms.send_sms(user_id, message)
+                  message2 = "Received KES #{bill_amount} from #{User.user_data(user_id).name} on #{@@time}. New business balance KES  #{Till.till_data(bill_account).balance} - #{@@transaction_id}"
+                  Requests.send_text_message(Till.till_data(bill_account).phone, message2)
+                  Sms.send_sms(Till.till_data(bill_account).phone, message2)
                 when 'ERR01'
                   Requests.send_text_message(user_id,
                                              "Unable to complete KES #{bill_amount} transfer to #{bill_account}, insufficient funds")
@@ -269,6 +275,8 @@ module Wapay
             Transaction.log_transaction(user_phone, 'self', 'balance', 'self', @@transaction_id)
             Requests.send_text_message(user_phone,
                                        "Your balance on #{@@time} was KES #{User.user_data(user_phone).balance} - #{@@transaction_id}")
+          elsif message.downcase == 'help'
+            Requests.send_contact_message(user_phone)
           end
 
           if session

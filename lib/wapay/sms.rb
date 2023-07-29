@@ -3,15 +3,15 @@
 module Wapay
   class Sms
     @username = ENV['AT_USERNAME']
-    @api_key = ENV['AT_API_KEY']
-    @endpoint = ENV['AT_ENDPOINT']
+    @api_key = ENV['AT_API_KEY_LIVE']
+    @endpoint = ENV['AT_ENDPOINT_LIVE']
 
     def self.send_sms(recipient, message)
       recipient = recipient[1..].rjust(13, '+254')
       data = {
-        'username' => 'sandbox',
+        'username' => @username,
         'to' => recipient,
-        'from' => '7633',
+        # 'from' => '7633',
         'message' => message
       }
 

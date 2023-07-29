@@ -571,6 +571,7 @@ module Wapay
                   AirtimeAndData.send_airtime(recipient[1..].rjust(13, '+254'), amount)
                   Requests.send_text_message(session_id,
                                              "Airtime top up of KES #{amount} to #{recipient} was successful")
+                  Sms.send_sms(session_id, message)
                   Session.delete_session(session_id)
                 else
                   Requests.send_text_message(session_id, 'Wrong phone number format ')

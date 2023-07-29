@@ -27,7 +27,7 @@ module Wapay
           "PartyA": bill_account.to_i,
           "PartyB": 174_379,
           "PhoneNumber": bill_account.to_i,
-          "CallBackURL": 'https://3c5334842c52-15660798139000638402.ngrok-free.app/webhook/mpesa',
+          "CallBackURL": ENV['DARAJA_CALLBACK_URL'] + '/webhook/mpesa',
           "AccountReference": 'Lyd Pay Inc',
           "TransactionDesc": 'Wallet Top-Up'
         }
@@ -45,11 +45,11 @@ module Wapay
           "SecurityCredential": credential(ENV['DARAJA_INITIATOR_PASSWORD']),
           "CommandID": 'BusinessPayment',
           "Amount": bill_amount,
-          "PartyA": 600_997,
+          "PartyA": 174_379,
           "PartyB": bill_account,
           "Remarks": 'Test remarks',
-          "QueueTimeOutURL": 'https://3c5334842c52-15660798139000638402.ngrok-free.app/webhook/mpesa/b2c/queue',
-          "ResultURL": 'https://3c5334842c52-15660798139000638402.ngrok-free.app/webhook/mpesa/b2c',
+          "QueueTimeOutURL": ENV['DARAJA_CALLBACK_URL'] + '/mpesa/b2c/queue',
+          "ResultURL": ENV['DARAJA_CALLBACK_URL'] + '/webhook/mpesa/b2c',
           "Occassion": ''
         }
       end

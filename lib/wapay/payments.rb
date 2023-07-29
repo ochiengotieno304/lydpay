@@ -16,8 +16,10 @@ module Wapay
         }
 
         User.update_user(user_id, update_data)
+        message = "Top up of KES #{amount} was successful. New wallet balance is KES #{balance}"
         Requests.send_text_message(user_id,
-                                   "Top up of KES #{amount} was successful. New wallet balance is KES #{balance}")
+                                   message)
+        Sms.send_sms(user_id, message)
       else
         Requests.send_text_message(user_id, "We were unable to process your KES #{amount} top up request")
       end
