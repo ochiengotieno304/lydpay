@@ -60,7 +60,7 @@ module Wapay
                   Requests.send_text_message(user_id,
                                              message)
                   Sms.send_sms(user_id, message)
-                  Sms.send_sms(bill_account, message2)
+                  Sms.send_sms(bill_account, message2) if bill_amount >= 50
                 when 'ERR01'
                   Requests.send_text_message(user_id,
                                              "Unable to complete KES #{bill_amount} airtime top up, insufficient funds")
