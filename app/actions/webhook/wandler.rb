@@ -33,7 +33,7 @@ module Wapay
           when 'buy-airtime'
             Session.delete_session(user_id) if session
             Session.create_session(user_id, 'payments', 'buy-airtime')
-            Requests.send_text_message(user_id, 'Top up amount')
+            Requests.send_text_message(user_id, 'Recipient phone number')
           when 'wallet-top-up'
             Session.delete_session(user_id) if session
             Session.create_session(user_id, 'payments', 'wallet-top-up')
@@ -51,14 +51,16 @@ module Wapay
 
               case transfer_type
               when 'buy-airtime'
-                transaction_code = AirtimeAndData.send_airtime(user_id, bill_amount)
+                transaction_code = AirtimeAndData.send_airtime(user_id, bill_account, bill_amount)
                 case transaction_code
                 when 'ACC01'
                   Transaction.log_transaction(user_id, bill_account, transfer_type, bill_amount, @@transaction_id)
                   message = "Airtime top up worth KES #{bill_amount} on #{@@time} successful. New wallet balance KES #{User.user_data(user_id).balance} - #{@@transaction_id}"
+                  message2 = "You have received KES #{bill_amount} airtime from #{user_id}"
                   Requests.send_text_message(user_id,
                                              message)
                   Sms.send_sms(user_id, message)
+                  Sms.send_sms(bill_account, message2)
                 when 'ERR01'
                   Requests.send_text_message(user_id,
                                              "Unable to complete KES #{bill_amount} airtime top up, insufficient funds")
@@ -236,11 +238,15 @@ module Wapay
         def handle_buy_airtime(session, message)
           user_phone = session._id
           amount = session.amount
-          bill_account = message
+          recipient_account = session.recipientAccount
 
-          if amount.nil?
-            Session.update_sessions(user_phone, { amount: bill_account })
-            Requests.send_button_message(user_phone, "Confirm KES #{bill_account} top up", @@confirmation_buttons)
+          if recipient_account.nil?
+            Session.update_sessions(user_phone, { recipientAccount: message })
+            Requests.send_text_message(user_phone, 'Amount to top up amount')
+          elsif amount.nil?
+            bill_amount = message
+            Session.update_sessions(user_phone, { amount: bill_amount })
+            Requests.send_button_message(user_phone, "Confirm KES #{bill_amount} top up to #{recipient_account}", @@confirmation_buttons)
           else
             Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} airtime top up",
                                          @@confirmation_buttons)

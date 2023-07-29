@@ -9,8 +9,8 @@ module Wapay
     @api_key = ENV['AT_API_KEY_LIVE']
     @endpoint = ENV['AT_ENDPOINT_LIVE']
 
-    def self.send_airtime(recipient, amount)
-      from_account_balance = User.user_data(recipient).balance.to_i
+    def self.send_airtime(user_id, recipient, amount)
+      from_account_balance = User.user_data(user_id).balance.to_i
 
       if from_account_balance > amount.to_i
         int_recipient = recipient[1..].rjust(13, '+254')
@@ -24,7 +24,7 @@ module Wapay
         res = JSON.parse(response.body.to_json, object_class: OpenStruct)
         if res.errorMessage == 'None'
           if res.responses[0].status == 'Sent'
-            User.update_user(recipient, { 'balance' => from_account_balance - amount.to_i })
+            User.update_user(user_id, { 'balance' => from_account_balance - amount.to_i })
             'ACC01'
           end
         else
