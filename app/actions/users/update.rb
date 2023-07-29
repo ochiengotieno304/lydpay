@@ -19,7 +19,7 @@ module Wapay
           # path_info = request.path_info
           id = request.params[:id]
 
-          if http_method == 'PATCH'  # && path_info.match(%r{^/users/(\*)$})
+          if http_method == 'PATCH' # && path_info.match(%r{^/users/(\*)$})
             # id = ::Regexp.last_match(1)
             request_data = request.params
             hash = {}

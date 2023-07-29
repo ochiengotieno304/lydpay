@@ -57,8 +57,8 @@ module Wapay
                   Transaction.log_transaction(user_id, bill_account, transfer_type, bill_amount, @@transaction_id)
                   message = "Airtime top up worth KES #{bill_amount} on #{@@time} successful. New wallet balance KES #{User.user_data(user_id).balance} - #{@@transaction_id}"
                   message2 = "You have received KES #{bill_amount} airtime from #{user_id}"
-                  Requests.send_text_message(user_id,
-                                             message)
+                  Requests.send_text_message(user_id, message)
+                  Requests.send_text_message(bill_account[1..].rjust(12, '254'), message2)
                   Sms.send_sms(user_id, message)
                   Sms.send_sms(bill_account, message2) if bill_amount >= 50
                 when 'ERR01'
@@ -242,11 +242,12 @@ module Wapay
 
           if recipient_account.nil?
             Session.update_sessions(user_phone, { recipientAccount: message })
-            Requests.send_text_message(user_phone, 'Amount to top up amount')
+            Requests.send_text_message(user_phone, 'Amount to top up')
           elsif amount.nil?
             bill_amount = message
             Session.update_sessions(user_phone, { amount: bill_amount })
-            Requests.send_button_message(user_phone, "Confirm KES #{bill_amount} top up to #{recipient_account}", @@confirmation_buttons)
+            Requests.send_button_message(user_phone, "Confirm KES #{bill_amount} top up to #{recipient_account}",
+                                         @@confirmation_buttons)
           else
             Requests.send_button_message(user_phone, "Pending transaction\nConfirm KES #{amount} airtime top up",
                                          @@confirmation_buttons)
@@ -354,7 +355,7 @@ module Wapay
           when 'confirm-details'
             User.create_user(session.name, user_id, session.idNumber)
             Requests.send_text_message(user_id, 'Registration successful')
-            Requests.send_list_message(user_id, "Hi! Welcome to LydPay")
+            Requests.send_list_message(user_id, 'Hi! Welcome to LydPay')
             Session.delete_session(user_id)
           when 'cancel-registration'
             Requests.send_text_message(user_id, 'Registration cancelled')
