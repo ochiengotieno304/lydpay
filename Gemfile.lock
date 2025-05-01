@@ -184,7 +184,7 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     regexp_parser (2.8.1)
-    rexml (3.2.6)
+    rexml (3.3.9)
     rom (5.3.0)
       rom-changeset (~> 5.3, >= 5.3.0)
       rom-core (~> 5.3, >= 5.3.0)
