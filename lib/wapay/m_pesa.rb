@@ -68,7 +68,7 @@ module Wapay
     end
 
     private_class_method def self.credential(initiator_password)
-      raw = File.read(File.join(File.dirname(__FILE__), '../../sandbox.pem'))
+      raw = File.read(File.join(File.dirname(__FILE__), '../../SandboxCertificate.cer'))
       cert = OpenSSL::X509::Certificate.new(raw)
       key = cert.public_key
       Base64.strict_encode64(key.public_encrypt(initiator_password))

@@ -726,7 +726,7 @@ module Wapay
             balance = Till.till_data(@recipient_account).balance
 
             message = "Successfully sent KES #{@amount} to #{till_name} on #{@formatted_time}. New wallet balance KES #{User.user_data(@user_id).balance} - #{@transaction_id}"
-            message2 = "Received KES #{@amount} from #{User.user_data(@user_id).name} on #{@formatted_time}. New business balance KES #{balance} - #{@transaction_id}"
+            message2 = "Received KES #{@amount} from #{User.user_data(@user_id).name} on #{@formatted_time} for business account #{@till_name}. New till balance KES #{balance} - #{@transaction_id}"
 
             Transaction.log_transaction(@user_id, @recipient_account, 'wallet-to-till', @amount, @transaction_id)
 
